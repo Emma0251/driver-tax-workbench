@@ -504,6 +504,44 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 }
 .swipe-hint .arrow{ font-size:13px;opacity:.7 }
 
+/* ===== Period gross-income summary (top of records list) ===== */
+.period-summary{
+  background:linear-gradient(135deg, rgba(124,92,255,.10), rgba(255,142,178,.10));
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px 12px 14px;
+  margin-bottom:12px;
+}
+.period-summary-head{
+  display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;gap:8px;
+}
+.period-summary-title{
+  font-size:13px;font-weight:700;color:var(--text);
+}
+.period-summary-sub{
+  font-size:10px;color:var(--text-light);
+}
+.period-summary-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+}
+.period-box{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px 6px;text-align:center;
+}
+.period-box.highlight{
+  background:var(--card-soft);
+  border-color:var(--primary);
+}
+.period-box-label{
+  font-size:11px;color:var(--text-light);margin-bottom:4px;
+}
+.period-box-value{
+  font-size:16px;font-weight:800;color:var(--text);
+  letter-spacing:-.3px;
+}
+
 /* ===== Record view toggle ===== */
 .view-toggle{
   display:flex;gap:6px;margin-bottom:10px;
@@ -866,6 +904,26 @@ input[type="date"]::-webkit-calendar-picker-indicator{
           <button class="view-toggle-btn" data-view="lastMonth" onclick="setRecordView('daily','lastMonth')" data-i18n="view_lastMonth">上月</button>
           <button class="view-toggle-btn active" data-view="thisWeek" onclick="setRecordView('daily','thisWeek')" data-i18n="view_thisWeek">本週</button>
           <button class="view-toggle-btn" data-view="thisMonth" onclick="setRecordView('daily','thisMonth')" data-i18n="view_thisMonth">本月</button>
+        </div>
+        <div class="period-summary" id="periodSummary">
+          <div class="period-summary-head">
+            <span class="period-summary-title" data-i18n="period_summary_title">期間毛收入總結</span>
+            <span class="period-summary-sub" data-i18n="period_summary_sub">上月 · 本週 · 下月</span>
+          </div>
+          <div class="period-summary-grid">
+            <div class="period-box">
+              <div class="period-box-label" data-i18n="view_lastMonth">上月</div>
+              <div class="period-box-value" id="sumLastMonth">£0.00</div>
+            </div>
+            <div class="period-box highlight">
+              <div class="period-box-label" data-i18n="view_thisWeek">本週</div>
+              <div class="period-box-value" id="sumThisWeek">£0.00</div>
+            </div>
+            <div class="period-box">
+              <div class="period-box-label" data-i18n="view_nextMonth">下月</div>
+              <div class="period-box-value" id="sumNextMonth">£0.00</div>
+            </div>
+          </div>
         </div>
         <div class="swipe-hint"><span data-i18n="swipe_hint_text">點擊 ✕ 刪除記錄</span></div>
         <div id="dailyRecords"></div>
@@ -1736,6 +1794,9 @@ const I18N = {
   view_lastMonth: { zh:'上月', en:'Last Month' },
   view_thisWeek: { zh:'本週', en:'This Week' },
   view_thisMonth: { zh:'本月', en:'This Month' },
+  view_nextMonth: { zh:'下月', en:'Next Month' },
+  period_summary_title: { zh:'期間毛收入總結', en:'Period Gross Income' },
+  period_summary_sub: { zh:'上月 · 本週 · 下月', en:'Last Month · This Week · Next Month' },
   swipe_hint_text: { zh:'點擊 ✕ 刪除記錄', en:'Tap ✕ to delete' },
   saved_label: { zh:'✅ 已儲存', en:'✅ Saved' },
 
@@ -2542,7 +2603,35 @@ function getViewRange(mode){
     const last = new Date(y, m, 0);
     return [ymd(first), ymd(last)];
   }
+  if(mode === 'nextMonth'){
+    const first = new Date(y, m + 1, 1);
+    const last = new Date(y, m + 2, 0);
+    return [ymd(first), ymd(last)];
+  }
   return ['0000-01-01', '9999-12-31'];
+}
+
+/* Sum gross income (毛收入) across DB.dailyRecords for a given period */
+function periodGrossTotal(mode){
+  const [start, end] = getViewRange(mode);
+  let total = 0;
+  DB.dailyRecords.forEach(r => {
+    if(r.date >= start && r.date <= end){
+      total += r.grossIncome || 0;
+    }
+  });
+  return total;
+}
+
+/* Render the 上月 / 本週 / 下月 gross-income summary at the top of the records list */
+function renderPeriodSummary(){
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = fmt(val);
+  };
+  set('sumLastMonth', periodGrossTotal('lastMonth'));
+  set('sumThisWeek', periodGrossTotal('thisWeek'));
+  set('sumNextMonth', periodGrossTotal('nextMonth'));
 }
 
 function filterByView(records, mode, dateField){
@@ -2781,6 +2870,7 @@ function deleteDailyRecord(date){
 }
 
 function renderDailyRecords(){
+  renderPeriodSummary();
   const container = document.getElementById('dailyRecords');
   const all = [...DB.dailyRecords].reverse();
   const records = filterByView(all, recordViewMode.daily, 'date');
