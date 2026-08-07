@@ -102,6 +102,41 @@ body{
 .main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
 .main::-webkit-scrollbar{width:0}
 .page{display:none;padding:16px 14px 40px;animation:fadeIn .3s ease}
+
+/* ===== Driver Bar ===== */
+.driver-bar{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+}
+.driver-bar-label{font-size:12px;font-weight:700;color:var(--text-light);white-space:nowrap}
+.driver-select{
+  flex:1;min-width:0;
+  font-family:inherit;font-size:14px;font-weight:600;color:var(--text);
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:7px 10px;appearance:none;-webkit-appearance:none;
+}
+.driver-add-btn{
+  flex:none;width:34px;height:34px;border:none;border-radius:10px;
+  background:var(--primary);color:#fff;font-size:20px;font-weight:700;
+  cursor:pointer;line-height:1;
+}
+.driver-add-btn:active{opacity:.8}
+
+/* ===== Driver Management (settings) ===== */
+.driver-manage-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.driver-row{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--card);
+}
+.driver-row.active{border-color:var(--primary);background:var(--primary-soft,#eef2ff)}
+.driver-row-name{font-size:14px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px}
+.driver-badge{font-size:10px;background:var(--primary);color:#fff;padding:1px 7px;border-radius:8px;font-weight:700}
+.driver-row-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.btn-sm{font-size:12px;padding:5px 10px}
+.btn-danger{background:var(--danger,#e5484d);color:#fff;border:none}
 .page.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
@@ -127,8 +162,6 @@ body{
 }
 .input-label .en{font-size:10px;color:var(--text-light);font-weight:400}
 .input-hint{font-size:11px;color:var(--text-light);margin-top:4px}
-.mpg-auto-display{font-size:13px;color:var(--text);font-weight:600;margin-top:10px;padding:8px 12px;background:var(--bg);border-radius:10px}
-.mpg-auto-display #fuelLogMPGDisplay{color:var(--accent,#2f6df6)}
 
 .input-field{
   width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);
@@ -319,6 +352,10 @@ body{
   color:var(--text-mid);line-height:1.6;margin-bottom:12px;
 }
 .notice strong{color:var(--pink)}
+.notice.warn{
+  background:#FEF3C7;border:1px solid #F59E0B;color:#92400E;
+}
+.notice.warn strong{color:#B45309}
 
 .result-banner{
   border-radius:var(--radius);padding:18px 16px;text-align:center;margin-bottom:14px;
@@ -332,22 +369,6 @@ body{
 .result-banner.owe .result-banner-value{color:#B45309}
 .result-banner.refund .result-banner-value{color:#059669}
 
-.history-item{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px 12px;background:var(--card-soft);border-radius:var(--radius-xs);
-  margin-bottom:6px;border:1px solid var(--border-soft);
-}
-.history-date{font-size:12px;color:var(--text-light)}
-.history-value{font-size:13px;font-weight:600;color:var(--primary-deep)}
-
-.fuel-current{
-  background:linear-gradient(135deg,var(--primary),var(--pink));
-  border-radius:var(--radius);padding:20px 16px;text-align:center;color:#fff;
-  margin-bottom:14px;box-shadow:0 6px 20px rgba(139,92,246,.25);
-}
-.fuel-current-label{font-size:13px;opacity:.85;margin-bottom:4px}
-.fuel-current-value{font-size:36px;font-weight:900;letter-spacing:-1px}
-.fuel-current-date{font-size:12px;opacity:.7;margin-top:4px}
 
 .tab-row{display:flex;gap:6px;margin-bottom:12px}
 .tab-btn{
@@ -553,26 +574,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 }
 .view-toggle-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 
-/* ===== MPG Calculator ===== */
-.mpg-result{
-  background:linear-gradient(135deg,var(--primary),var(--pink));
-  border-radius:var(--radius-sm);padding:14px;text-align:center;color:#fff;
-  margin-top:10px;display:none;
-}
-.mpg-result.show{display:block}
-.mpg-result-label{font-size:12px;opacity:.85;margin-bottom:2px}
-.mpg-result-value{font-size:28px;font-weight:900;letter-spacing:-1px}
-.mpg-result-unit{font-size:13px;opacity:.8}
-.mpg-apply-btn{
-  width:100%;padding:10px;margin-top:8px;border:none;border-radius:var(--radius-xs);
-  background:rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:700;
-  cursor:pointer;font-family:inherit;
-}
-.mpg-apply-btn:active{background:rgba(255,255,255,.35)}
-.mpg-current-display{
-  font-size:12px;color:var(--text-light);text-align:center;margin-bottom:8px;
-}
-.mpg-current-display strong{color:var(--primary-dark)}
 
 /* ===== Greeting Page ===== */
 .greeting-overlay{
@@ -751,6 +752,13 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   <!-- ===== Main Content ===== -->
   <main class="main" id="main">
 
+    <!-- ===== Driver Bar (always visible, switch / add driver) ===== -->
+    <div class="driver-bar" id="driverBar">
+      <span class="driver-bar-label" data-i18n="driver_label">司機</span>
+      <select class="driver-select" id="driverSelect" onchange="onDriverSelectChange()"></select>
+      <button class="driver-add-btn" onclick="promptAddDriver()" title="新增司機" data-i18n="driver_add_short">＋</button>
+    </div>
+
     <!-- ==================== Page: Daily Stats ==================== -->
     <!-- ==================== Page: Home ==================== -->
     <div class="page active" id="page-home">
@@ -854,28 +862,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
           </div>
           <div class="input-hint" data-i18n="daily_direct_hint">估唔到件數？直接填呢日／呢個月嘅總收入就得</div>
         </div>
-        <div class="input-group">
-          <div class="input-label" data-i18n="daily_mileage">🛣️ 行車里程 <span class="en">Mileage</span></div>
-          <div style="display:flex;gap:8px;align-items:flex-end">
-            <div style="flex:1">
-              <div style="font-size:11px;color:var(--text-light);margin-bottom:2px" data-i18n="daily_mileage_start">開始 Start</div>
-              <div class="input-suffix-wrap">
-                <input type="number" class="input-field" id="dailyMileageStart" placeholder="50000" inputmode="decimal" min="0" step="0.1" style="font-size:14px">
-                <span class="input-suffix">mi</span>
-              </div>
-            </div>
-            <div style="font-size:18px;color:var(--text-light);padding-bottom:8px">→</div>
-            <div style="flex:1">
-              <div style="font-size:11px;color:var(--text-light);margin-bottom:2px" data-i18n="daily_mileage_end">結束 End</div>
-              <div class="input-suffix-wrap">
-                <input type="number" class="input-field" id="dailyMileageEnd" placeholder="50120" inputmode="decimal" min="0" step="0.1" style="font-size:14px">
-                <span class="input-suffix">mi</span>
-              </div>
-            </div>
-          </div>
-          <div id="dailyMilesDisplay" style="font-size:12px;color:var(--primary);margin-top:4px;font-weight:600;display:none"></div>
-          <div id="autoFillHint" style="font-size:11px;color:var(--text-light);margin-top:4px;display:none" data-i18n="daily_autofill_hint">↩️ 已自動填入上次結束里程</div>
-        </div>
         <div id="dailyPreview" style="display:none">
           <div class="section-divider"></div>
           <div class="stat-row">
@@ -883,16 +869,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{
             <span class="stat-value income" id="previewGross">£0.00</span>
           </div>
           <div class="stat-row">
-            <span class="stat-label" data-i18n="daily_fuel_exp">油費開支 <span class="en">Fuel Expenses</span></span>
-            <span class="stat-value tax" id="previewFuel">£0.00</span>
-          </div>
-          <div class="stat-row">
             <span class="stat-label" style="font-weight:700;color:var(--net)" data-i18n="daily_net">今日淨收入 <span class="en">Net Income</span></span>
             <span class="stat-value net" id="previewNet">£0.00</span>
           </div>
-        </div>
-        <div id="dailyNoFuelWarning" style="display:none">
-          <div class="alert-inline" data-i18n="daily_no_fuel_warning">⚠️ 尚未設定油價，請先至「油價與行車」頁面輸入最新油價</div>
         </div>
         <button class="btn btn-primary" onclick="saveDailyRecord(event)" style="margin-top:12px" data-i18n="daily_save">💾 儲存紀錄</button>
       </div>
@@ -979,67 +958,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     <!-- ==================== Page: Fuel ==================== -->
     <div class="page" id="page-fuel">
       <div class="page-header">
-        <div class="page-title" data-i18n="fuel_title">⛽ 油價與行車</div>
-        <div class="page-subtitle" data-i18n="fuel_subtitle">Fuel & Driving Cost</div>
-      </div>
-
-      <div class="notice" id="fuelFirstUseBanner" style="display:none" data-i18n="fuel_prompt_banner">👋 歡迎！請先輸入現時油價，然後即可記錄每日收入</div>
-
-      <!-- Current Rate -->
-      <div class="fuel-current" id="fuelCurrentDisplay">
-        <div class="fuel-current-label" data-i18n="fuel_current_label">每英里油費 <span style="font-size:11px">£/Mile</span></div>
-        <div class="fuel-current-value" id="currentCostPerMile">—</div>
-        <div class="fuel-current-date" id="currentFuelDate" data-i18n="fuel_not_set">尚未設定</div>
-      </div>
-
-      <!-- Input Form -->
-      <div class="card">
-        <div class="card-title" data-i18n="fuel_update">更新油價 <span class="en">Update Fuel Price</span></div>
-        <div class="tab-row">
-          <button class="tab-btn active" data-fuel-tab="perLitre" onclick="switchFuelTab('perLitre')" data-i18n="fuel_tab_perLitre">p/L 便士</button>
-          <button class="tab-btn" data-fuel-tab="perGallon" onclick="switchFuelTab('perGallon')" data-i18n="fuel_tab_perGallon">£/Gallon 加侖</button>
-          <button class="tab-btn" data-fuel-tab="perMile" onclick="switchFuelTab('perMile')" data-i18n="fuel_tab_perMile">£/Mile 直接</button>
-        </div>
-        <div class="input-group">
-          <div class="input-label" data-i18n="label_date">日期 <span class="en">Date</span></div>
-          <input type="date" class="input-field" id="fuelDate">
-        </div>
-        <div id="fuelInputPerLitre" class="fuel-input-section">
-          <div class="input-group">
-            <div class="input-label" data-i18n="fuel_price_perLitre">⛽ 油價 <span class="en">Price per Litre (pence)</span></div>
-            <div class="input-prefix-wrap">
-              <span class="input-prefix">p</span>
-              <input type="number" class="input-field" id="fuelPricePerLitre" placeholder="142.9" inputmode="decimal" min="0" step="0.1">
-            </div>
-            <div class="input-hint" data-i18n="fuel_hint_perLitre">系統將根據車輛油耗自動換算每英里油費</div>
-          </div>
-        </div>
-        <div id="fuelInputPerGallon" class="fuel-input-section" style="display:none">
-          <div class="input-group">
-            <div class="input-label" data-i18n="fuel_price_perGallon">⛽ 油價 <span class="en">Price per Gallon</span></div>
-            <div class="input-prefix-wrap">
-              <span class="input-prefix">£</span>
-              <input type="number" class="input-field" id="fuelPricePerGallon" placeholder="6.59" inputmode="decimal" min="0" step="0.01">
-            </div>
-            <div class="input-hint" data-i18n="fuel_hint_perGallon">1 Imperial Gallon = 4.54609 Litres</div>
-          </div>
-        </div>
-        <div id="fuelInputPerMile" class="fuel-input-section" style="display:none">
-          <div class="input-group">
-            <div class="input-label" data-i18n="fuel_cost_perMile">🛣️ 每英里油費 <span class="en">Cost per Mile</span></div>
-            <div class="input-prefix-wrap">
-              <span class="input-prefix">£</span>
-              <input type="number" class="input-field" id="fuelCostPerMile" placeholder="0.17" inputmode="decimal" min="0" step="0.001">
-            </div>
-            <div class="input-hint" data-i18n="fuel_hint_perMile">直接輸入已知每英里成本</div>
-          </div>
-        </div>
-        <div id="fuelConvertPreview" style="display:none">
-          <div class="notice">
-            <strong data-i18n="fuel_convert_result">換算結果：</strong><span data-i18n="fuel_convert_per_mile">每英里油費 = </span><strong id="convertedCostPerMile">£0.00</strong>
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="saveFuelRecord(event)" data-i18n="fuel_save">💾 儲存油價</button>
+        <div class="page-title" data-i18n="fuel_title">⛽ 入油記錄</div>
+        <div class="page-subtitle" data-i18n="fuel_subtitle">Fuel-up Log</div>
       </div>
 
       <!-- Fuel-up Log -->
@@ -1048,13 +968,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
         <div class="input-group">
           <div class="input-label" data-i18n="label_date">日期 <span class="en">Date</span></div>
           <input type="date" class="input-field" id="fuelLogDate">
-        </div>
-        <div class="input-group">
-          <div class="input-label" data-i18n="fuel_log_mileage">入油時里程表 <span class="en">Odometer at Fill-up</span></div>
-          <div class="input-suffix-wrap">
-            <input type="number" class="input-field" id="fuelLogMileage" placeholder="50350" inputmode="decimal" min="0" step="0.1" style="font-size:14px">
-            <span class="input-suffix">mi</span>
-          </div>
         </div>
         <div class="input-group">
           <div class="input-label" data-i18n="fuel_log_litres">入油量 <span class="en">Litres Filled</span></div>
@@ -1071,10 +984,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
           </div>
         </div>
         <button class="btn btn-primary" onclick="saveFuelLog(event)" data-i18n="fuel_log_save">➕ 新增入油記錄</button>
-        <div class="mpg-auto-display">📊 <span data-i18n="fuel_log_current_mpg">目前實際 MPG</span>：<span id="fuelLogMPGDisplay">—</span></div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn btn-soft" onclick="autoCalcMPGFromLog()" style="flex:1;font-size:13px" data-i18n="fuel_log_autocalc">📊 重新計算 MPG</button>
-        </div>
         <div class="view-toggle" data-view-toggle="fuelog" style="margin-top:12px">
           <button class="view-toggle-btn" data-view="lastMonth" onclick="setRecordView('fuelog','lastMonth')" data-i18n="view_lastMonth">上月</button>
           <button class="view-toggle-btn active" data-view="thisWeek" onclick="setRecordView('fuelog','thisWeek')" data-i18n="view_thisWeek">本週</button>
@@ -1084,17 +993,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
         <div id="fuelLogRecords"></div>
       </div>
 
-      <!-- History -->
-      <div class="card">
-        <div class="card-title" data-i18n="fuel_history">歷史油價紀錄 <span class="en">Fuel Price History</span></div>
-        <div class="view-toggle" data-view-toggle="fuel">
-          <button class="view-toggle-btn" data-view="lastMonth" onclick="setRecordView('fuel','lastMonth')" data-i18n="view_lastMonth">上月</button>
-          <button class="view-toggle-btn active" data-view="thisWeek" onclick="setRecordView('fuel','thisWeek')" data-i18n="view_thisWeek">本週</button>
-          <button class="view-toggle-btn" data-view="thisMonth" onclick="setRecordView('fuel','thisMonth')" data-i18n="view_thisMonth">本月</button>
-        </div>
-        <div class="swipe-hint"><span data-i18n="swipe_hint_text">點擊 ✕ 刪除記錄</span></div>
-        <div id="fuelHistory"></div>
-      </div>
     </div>
 
     <!-- ==================== Page: Tax ==================== -->
@@ -1306,10 +1204,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
           <span class="stat-value" id="annTotalDeliveries">0</span>
         </div>
         <div class="stat-row">
-          <span class="stat-label" data-i18n="annual_total_miles">總行車里程 <span class="en">Total Miles</span></span>
-          <span class="stat-value" id="annTotalMiles">0 mi</span>
-        </div>
-        <div class="stat-row">
           <span class="stat-label" data-i18n="annual_avg_daily">平均日收入 <span class="en">Avg Daily Income</span></span>
           <span class="stat-value income" id="annAvgDaily">£0.00</span>
         </div>
@@ -1365,27 +1259,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
           <div class="input-hint" data-i18n="settings_income_mode_default_hint">新紀錄預設用邊種方式輸入收入</div>
         </div>
         <button class="btn btn-primary" onclick="saveSettings()" style="margin-top:12px" data-i18n="settings_save">💾 儲存設定</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title" data-i18n="settings_fuel_efficiency">車輛油耗設定 <span class="en">Vehicle Fuel Efficiency</span></div>
-        <div class="input-group">
-          <div class="input-label" data-i18n="settings_mpg">車輛油耗 <span class="en">Miles per Gallon (MPG)</span></div>
-          <div class="input-suffix-wrap">
-            <input type="number" class="input-field" id="setMPG" placeholder="38" inputmode="decimal" min="1" step="0.1" value="38">
-            <span class="input-suffix">mpg</span>
-          </div>
-          <div class="input-hint" data-i18n="settings_mpg_hint">用於將油價 (£/L 或 £/Gallon) 自動換算為每英里油費</div>
-        </div>
-        <div class="input-group" style="margin-top:14px">
-          <div class="input-label" data-i18n="settings_fuel_expense_mode">燃料開支計算方式 <span class="en">Fuel Expense Method</span></div>
-          <select class="input-field" id="setFuelExpenseMode">
-            <option value="perMile" data-i18n="settings_fuel_mode_permile">每英里估算（里程 × 每英里油費）</option>
-            <option value="actualTotal" data-i18n="settings_fuel_mode_actual">實際入油總額（加總入油記錄）</option>
-          </select>
-          <div class="input-hint" data-i18n="settings_fuel_mode_hint">「實際入油總額」會直接加總你所有入油記錄的實際金額作為燃料開支（建議車輛主要用於工作）。如改用此方式，請勿同時在「其他開支」重複輸入油費。</div>
-        </div>
-        <button class="btn btn-secondary" onclick="saveMPG()" style="margin-top:4px" data-i18n="settings_save_mpg">💾 儲存油耗</button>
       </div>
 
       <div class="card" id="taxRulesCard">
@@ -1588,6 +1461,13 @@ input[type="date"]::-webkit-calendar-picker-indicator{
         <button class="btn btn-secondary" onclick="document.getElementById('importFileInput').click()" style="margin-bottom:8px" data-i18n="settings_import">📥 匯入數據 (JSON)</button>
         <button class="btn btn-danger" onclick="clearAllData()" data-i18n="settings_clear">🗑️ 清除所有數據</button>
       </div>
+
+      <div class="card">
+        <div class="card-title" data-i18n="driver_manage_title">👥 司機管理 <span class="en">Driver Management</span></div>
+        <div class="input-hint" data-i18n="driver_manage_hint">每位司機有獨立的記錄與設定（含「燃料開支計算方式」）。切換司機後，上方工具列可快速切換。</div>
+        <div id="driverManageList" class="driver-manage-list"></div>
+        <button class="btn btn-primary" onclick="promptAddDriver()" style="margin-top:12px" data-i18n="driver_add">➕ 新增司機</button>
+      </div>
     </div>
 
   </main>
@@ -1630,19 +1510,13 @@ const I18N = {
   daily_week_net: { zh:'本週淨收入<span class="en">Week Net</span>', en:'Week Net' },
   daily_add_record: { zh:'新增每日紀錄 <span class="en">Add Daily Record</span>', en:'Add Daily Record' },
   daily_deliveries: { zh:'📦 今日送貨件數 <span class="en">Deliveries</span>', en:'📦 Deliveries' },
-  daily_mileage: { zh:'🛣️ 行車里程 <span class="en">Mileage</span>', en:'🛣️ Mileage' },
-  daily_mileage_start: { zh:'開始 Start', en:'Start' },
-  daily_mileage_end: { zh:'結束 End', en:'End' },
-  daily_autofill_hint: { zh:'↩️ 已自動填入上次結束里程', en:'↩️ Auto-filled from last record\'s end mileage' },
   daily_gross: { zh:'總收入 <span class="en">Gross Income</span>', en:'Gross Income' },
-  daily_fuel_exp: { zh:'油費開支 <span class="en">Fuel Expenses</span>', en:'Fuel Expenses' },
   daily_net: { zh:'今日淨收入 <span class="en">Net Income</span>', en:'Net Income' },
   daily_income_mode: { zh:'💷 收入方式 <span class="en">Income Method</span>', en:'💷 Income Method' },
   daily_mode_parcel: { zh:'按件計', en:'By Deliveries' },
   daily_mode_direct: { zh:'直接填收入', en:'Direct Income' },
   daily_direct_income: { zh:'📥 總收入 <span class="en">Total Income (£)</span>', en:'📥 Total Income (£)' },
   daily_direct_hint: { zh:'估唔到件數？直接填呢日／呢個月嘅總收入就得，App 會用作稅務計算', en:"Don't know parcel count? Just enter the total income for the day/month; the app uses it for tax calc." },
-  daily_no_fuel_warning: { zh:'⚠️ 尚未設定油價，請先至「油價與行車」頁面輸入最新油價', en:'⚠️ Fuel price not set. Please go to the Fuel & Driving page to enter the latest fuel price.' },
   daily_save: { zh:'💾 儲存紀錄', en:'💾 Save Record' },
   daily_recent: { zh:'近期紀錄 <span class="en">Recent Records</span>', en:'Recent Records' },
   daily_other_exp: { zh:'🧾 其他支出 <span class="en">Other Expenses</span>', en:'🧾 Other Expenses' },
@@ -1650,11 +1524,8 @@ const I18N = {
   daily_recent_exp: { zh:'近期支出紀錄 <span class="en">Recent Expenses</span>', en:'Recent Expenses' },
 
   /* --- Daily Page (JS dynamic) --- */
-  daily_miles_display: { zh:'今日里程：', en:"Today's mileage: " },
-  alert_end_before_start: { zh:'結束里程不能小於開始里程', en:'End mileage cannot be less than start mileage.' },
-  alert_enter_deliveries_or_miles: { zh:'請輸入送貨件數或行車里程', en:'Please enter deliveries or mileage.' },
-  alert_enter_income_or_miles: { zh:'請輸入總收入或行車里程', en:'Please enter total income or mileage.' },
-  alert_no_fuel: { zh:'尚未設定油價，請先至「油價與行車」頁面輸入最新油價', en:'Fuel price not set. Please go to the Fuel & Driving page first.' },
+  alert_enter_deliveries: { zh:'請輸入送貨件數', en:'Please enter the number of deliveries.' },
+  alert_enter_income: { zh:'請輸入總收入', en:'Please enter total income.' },
   alert_delete_daily_prefix: { zh:'確定刪除 ', en:'Delete record for ' },
   alert_delete_daily_suffix: { zh:' 的紀錄？', en:'?' },
   empty_daily: { zh:'尚無紀錄，請新增每日工作紀錄', en:'No records yet. Add your first daily work record.' },
@@ -1663,7 +1534,6 @@ const I18N = {
   unit_per_delivery: { zh:'/件', en:'/del.' },
   record_inc: { zh:'收', en:'Inc' },
   record_direct: { zh:'直接收入', en:'Direct' },
-  record_fuel: { zh:'油', en:'Fuel' },
   alert_enter_category: { zh:'請輸入支出項目名稱', en:'Please enter an expense category.' },
   alert_enter_amount: { zh:'請輸入有效金額', en:'Please enter a valid amount.' },
   alert_delete_expense: { zh:'確定刪除此支出紀錄？', en:'Delete this expense record?' },
@@ -1671,60 +1541,23 @@ const I18N = {
   /* --- Fuel Page (static) --- */
   fuel_title: { zh:'⛽ 油價與行車', en:'⛽ Fuel & Driving' },
   fuel_subtitle: { zh:'Fuel & Driving Cost', en:'Fuel & Driving Cost' },
-  fuel_current_label: { zh:'每英里油費 <span style="font-size:11px">£/Mile</span>', en:'Cost per Mile <span style="font-size:11px">£/Mile</span>' },
   fuel_not_set: { zh:'尚未設定', en:'Not set' },
   fuel_update: { zh:'更新油價 <span class="en">Update Fuel Price</span>', en:'Update Fuel Price' },
   fuel_tab_perLitre: { zh:'p/L 便士', en:'p/L Pence' },
   fuel_tab_perGallon: { zh:'£/Gallon 加侖', en:'£/Gallon' },
-  fuel_tab_perMile: { zh:'£/Mile 直接', en:'£/Mile Direct' },
-  fuel_price_perLitre: { zh:'⛽ 油價 <span class="en">Price per Litre (pence)</span>', en:'⛽ Price per Litre (pence)' },
-  fuel_price_perGallon: { zh:'⛽ 油價 <span class="en">Price per Gallon</span>', en:'⛽ Price per Gallon' },
-  fuel_cost_perMile: { zh:'🛣️ 每英里油費 <span class="en">Cost per Mile</span>', en:'🛣️ Cost per Mile' },
-  fuel_hint_perLitre: { zh:'系統將根據車輛油耗自動換算每英里油費', en:'System will auto-convert to cost per mile based on vehicle fuel efficiency.' },
   fuel_hint_perGallon: { zh:'1 Imperial Gallon = 4.54609 Litres', en:'1 Imperial Gallon = 4.54609 Litres' },
-  fuel_hint_perMile: { zh:'直接輸入已知每英里成本', en:'Enter the known cost per mile directly.' },
-  fuel_convert_result: { zh:'換算結果：', en:'Converted: ' },
-  fuel_convert_per_mile: { zh:'每英里油費 = ', en:'Cost per mile = ' },
   fuel_save: { zh:'💾 儲存油價', en:'💾 Save Fuel Price' },
-  fuel_history: { zh:'歷史油價紀錄 <span class="en">Fuel Price History</span>', en:'Fuel Price History' },
+
 
   /* --- Fuel-up Log (new) --- */
   fuel_log_title: { zh:'📝 入油記錄 <span class="en">Fuel-up Log</span>', en:'📝 Fuel-up Log' },
-  fuel_log_mileage: { zh:'入油時里程表 <span class="en">Odometer at Fill-up</span>（選填）', en:'Odometer at Fill-up (optional)' },
   fuel_log_litres: { zh:'入油量 <span class="en">Litres Filled</span>', en:'Litres Filled' },
   fuel_log_cost: { zh:'總金額 <span class="en">Total Cost</span>', en:'Total Cost' },
   fuel_log_save: { zh:'➕ 新增入油記錄', en:'➕ Add Fuel-up' },
-  fuel_log_current_mpg: { zh:'目前實際 MPG', en:'Current Actual MPG' },
-  fuel_log_autocalc: { zh:'📊 重新計算 MPG', en:'📊 Recalculate MPG' },
   empty_fuelog: { zh:'尚無入油記錄', en:'No fuel-up records yet.' },
   alert_fuel_log_enter: { zh:'請輸入入油量和金額', en:'Please enter litres and cost.' },
-  alert_fuel_log_mileage: { zh:'請輸入有效的里程', en:'Please enter a valid mileage reading.' },
-  mpg_autocalc_insufficient: { zh:'需要至少兩次入油記錄才能自動計算 MPG', en:'Need at least two fuel-up records to auto-calculate MPG.' },
-  mpg_autocalc_applied: { zh:'實際 MPG 已套用：', en:'Actual MPG applied: ' },
-  fuel_prompt_banner: { zh:'👋 歡迎！請先輸入現時油價，然後即可記錄每日收入', en:'👋 Welcome! Enter your current fuel price first, then you can log daily income.' },
-
-  /* --- MPG Calculator --- */
-  mpg_calc_title: { zh:'🔧 MPG 油耗計算器 <span class="en">MPG Calculator</span>', en:'🔧 MPG Calculator' },
-  mpg_prev_mileage: { zh:'上次入油時里程 <span class="en">Previous Fill-up Mileage</span>', en:'Previous Fill-up Mileage' },
-  mpg_curr_mileage: { zh:'今次入油時里程 <span class="en">Current Fill-up Mileage</span>', en:'Current Fill-up Mileage' },
-  mpg_litres: { zh:'入油量 <span class="en">Litres Filled</span>', en:'Litres Filled' },
-  mpg_result_label: { zh:'你的實際油耗', en:'Your Actual Fuel Efficiency' },
-  mpg_apply: { zh:'✅ 套用至此 MPG 設定', en:'✅ Apply to MPG Setting' },
-  mpg_hint: { zh:'入滿油時記下里程，下次再入滿油時記下里程和入油量，即可計算實際油耗', en:'Fill up your tank and note the mileage. Next time you fill up, note the mileage and litres added to calculate actual MPG.' },
-  mpg_current_setting: { zh:'目前設定：<strong>', en:'Current setting: <strong>' },
-  mpg_current_setting_suffix: { zh:' MPG</strong>', en:' MPG</strong>' },
-  mpg_alert_end_before_start: { zh:'今次里程不能小於上次里程', en:'Current mileage cannot be less than previous mileage.' },
-  mpg_alert_enter_all: { zh:'請填寫所有三個欄位', en:'Please fill in all three fields.' },
-  mpg_alert_applied: { zh:'✅ MPG 已更新為 ', en:'✅ MPG updated to ' },
-  mpg_miles_driven: { zh:'行駛里程：', en:'Miles driven: ' },
-  mpg_fuel_used: { zh:'入油量：', en:'Fuel used: ' },
 
   /* --- Fuel Page (JS dynamic) --- */
-  fuel_updated_date: { zh:'更新日期：', en:'Updated: ' },
-  fuel_direct_input: { zh:'直接輸入', en:'Direct input' },
-  fuel_price_label: { zh:'油價', en:'Fuel price' },
-  alert_enter_fuel_price: { zh:'請輸入油價', en:'Please enter fuel price.' },
-  alert_enter_cost_per_mile: { zh:'請輸入每英里油費', en:'Please enter cost per mile.' },
   alert_delete_fuel: { zh:'確定刪除此油價紀錄？', en:'Delete this fuel price record?' },
   swipe_delete_confirm: { zh:'確定刪除此紀錄？', en:'Delete this record?' },
   empty_fuel: { zh:'尚無油價紀錄', en:'No fuel price records yet.' },
@@ -1785,7 +1618,6 @@ const I18N = {
   annual_working_days: { zh:'送貨日數與件數 <span class="en">Working Days & Deliveries</span>', en:'Working Days & Deliveries' },
   annual_work_days: { zh:'工作日數 <span class="en">Working Days</span>', en:'Working Days' },
   annual_total_deliveries: { zh:'總送貨件數 <span class="en">Total Deliveries</span>', en:'Total Deliveries' },
-  annual_total_miles: { zh:'總行車里程 <span class="en">Total Miles</span>', en:'Total Miles' },
   annual_avg_daily: { zh:'平均日收入 <span class="en">Avg Daily Income</span>', en:'Avg Daily Income' },
   annual_records: { zh:'每日紀錄追溯 <span class="en">Daily Records</span>', en:'Daily Records' },
   annual_expense_records: { zh:'支出紀錄追溯 <span class="en">Expense Records</span>', en:'Expense Records' },
@@ -1815,14 +1647,7 @@ const I18N = {
   settings_income_mode_default: { zh:'預設收入輸入方式 <span class="en">Default Income Input</span>', en:'Default Income Input' },
   settings_income_mode_default_hint: { zh:'新紀錄預設用邊種方式輸入收入', en:'Default way to enter income for new records.' },
   settings_save: { zh:'💾 儲存設定', en:'💾 Save Settings' },
-  settings_fuel_efficiency: { zh:'車輛油耗設定 <span class="en">Vehicle Fuel Efficiency</span>', en:'Vehicle Fuel Efficiency' },
-  settings_mpg: { zh:'車輛油耗 <span class="en">Miles per Gallon (MPG)</span>', en:'Miles per Gallon (MPG)' },
-  settings_mpg_hint: { zh:'用於將油價 (£/L 或 £/Gallon) 自動換算為每英里油費', en:'Used to auto-convert fuel price (£/L or £/Gallon) to cost per mile.' },
-  settings_save_mpg: { zh:'💾 儲存油耗', en:'💾 Save MPG' },
-  settings_fuel_expense_mode: { zh:'燃料開支計算方式 <span class="en">Fuel Expense Method</span>', en:'Fuel Expense Method' },
-  settings_fuel_mode_permile: { zh:'每英里估算（里程 × 每英里油費）', en:'Per-mile estimate (miles × cost/mile)' },
-  settings_fuel_mode_actual: { zh:'實際入油總額（加總入油記錄）', en:'Actual fuel total (sum of fuel-ups)' },
-  settings_fuel_mode_hint: { zh:'「實際入油總額」會直接加總你所有入油記錄的實際金額作為燃料開支（建議車輛主要用於工作）。如改用此方式，請勿同時在「其他開支」重複輸入油費。', en:'Actual total sums all your fuel-up records as the fuel expense (best if the vehicle is mainly for work). If you use this, do not also enter fuel in "Other Expenses".' },
+  fuel_mode_warn_empty: { zh:'⚠️ 你仲未入過任何「入油記錄」（實際加油單）。目前油費會計做 <strong>£0.00</strong>，令稅計多咗。請到「入油記錄」入實際加油數。', en:'⚠️ You have not entered any fuel-up records yet. Fuel is currently counted as <strong>£0.00</strong>, which overstates your tax. Enter actual fuel-ups under "Fuel-up Log".' },
   settings_tax_rules: { zh:'英國稅務規則 <span class="en">UK Tax Rules</span>', en:'UK Tax Rules' },
   settings_tax_modified: { zh:'✏️ 已修改', en:'✏️ Modified' },
   settings_tax_hint: { zh:'可直接修改以下數值，一鍵重設回系統預設值。所有稅項按此處數值計算。', en:'Values are editable. Reset to defaults anytime. All tax calculations use these values.' },
@@ -1866,11 +1691,24 @@ const I18N = {
   settings_last_backup_never: { zh:'上次備份：從未', en:'Last backup: Never' },
   settings_last_backup_overdue: { zh:'⚠️ 已超過 14 天未備份！', en:'⚠️ Over 14 days since last backup!' },
 
+  /* --- Driver Management --- */
+  driver_label: { zh:'司機', en:'Driver' },
+  driver_add_short: { zh:'新增司機', en:'Add' },
+  driver_manage_title: { zh:'👥 司機管理 <span class="en">Driver Management</span>', en:'👥 Driver Management' },
+  driver_manage_hint: { zh:'每位司機有獨立的記錄與設定（含「燃料開支計算方式」）。切換司機後，上方工具列可快速切換。', en:'Each driver has independent records and settings (incl. fuel expense method). Use the top bar to switch quickly.' },
+  driver_add: { zh:'➕ 新增司機', en:'➕ Add Driver' },
+  driver_add_prompt: { zh:'輸入新司機名稱：', en:'Enter new driver name:' },
+  driver_new_default: { zh:'新司機', en:'New Driver' },
+  driver_rename_prompt: { zh:'輸入司機名稱：', en:'Enter driver name:' },
+  driver_rename: { zh:'改名', en:'Rename' },
+  driver_switch: { zh:'切換', en:'Switch' },
+  driver_delete: { zh:'刪除', en:'Delete' },
+  driver_current: { zh:'現用', en:'Current' },
+  driver_delete_last: { zh:'必須保留至少一位司機', en:'You must keep at least one driver' },
+  driver_delete_confirm: { zh:'確定刪除司機？此司機的所有記錄將被永久刪除：', en:'Delete this driver? All of this driver\'s records will be permanently removed: ' },
+
   /* --- Settings Page (JS dynamic) --- */
   alert_valid_rate: { zh:'請輸入有效的每件報酬', en:'Please enter a valid rate per delivery.' },
-  alert_valid_mpg: { zh:'請輸入有效的油耗值', en:'Please enter a valid MPG value.' },
-  alert_mpg_saved_prefix: { zh:'車輛油耗已儲存：', en:'Vehicle fuel efficiency saved: ' },
-  alert_mpg_saved_suffix: { zh:' MPG', en:' MPG' },
   alert_tax_rules_updated: { zh:'稅務規則已更新並套用至所有稅項計算', en:'Tax rules updated and applied to all calculations.' },
   alert_tax_rules_reset_default: { zh:'稅務規則已重設為系統預設值', en:'Tax rules reset to system defaults.' },
   alert_tax_reset: { zh:'已重設為系統預設稅務規則', en:'Reset to default tax rules.' },
@@ -2111,42 +1949,208 @@ function getEffectiveRefConfig(){
 function hasTaxRuleOverrides(){
   return DB.taxRuleOverrides && Object.keys(DB.taxRuleOverrides).length > 0;
 }
-const LITRES_PER_GALLON = 4.54609;
 
 /* ===== Data Layer ===== */
 const STORE_KEY = 'driverTaxWorkbench_v1';
 
+/* Per-driver data fields (kept independent per driver) */
+const DRIVER_FIELDS = ['settings','fuelLogRecords','dailyRecords','expenseRecords'];
+
+function makeDefaultDriver(name){
+  return {
+    name: name || '我',
+    settings: { ratePerDelivery:0.90, incomeModeDefault:'parcel' },
+    fuelLogRecords: [],
+    dailyRecords: [],
+    expenseRecords: [],
+  };
+}
+
 function loadData(){
-  const defaults = {
-    settings:{ ratePerDelivery:0.90, mpg:38, incomeModeDefault:'parcel', fuelExpenseMode:'perMile' },
-    fuelRecords:[],
-    fuelLogRecords:[],
-    dailyRecords:[],
-    expenseRecords:[],
-    expenseOverrides:{},
-    taxRuleOverrides:{},
-    taxRefOverrides:{},
-    refAllowanceVisibility:{},
-    employedData:{},
+  const globalDefaults = {
+    expenseOverrides:{}, taxRuleOverrides:{}, taxRefOverrides:{},
+    refAllowanceVisibility:{}, employedData:{},
+    activeDriver:'d_default',
+    drivers:{},
   };
   try{
     const raw = localStorage.getItem(STORE_KEY);
     if(raw){
       const parsed = JSON.parse(raw);
-      return Object.assign(defaults, parsed, {
-        refAllowanceVisibility: parsed.refAllowanceVisibility || {},
-        taxRefOverrides: parsed.taxRefOverrides || {},
-        taxRuleOverrides: parsed.taxRuleOverrides || {},
-      });
+      const DB0 = Object.assign({}, globalDefaults, parsed);
+      // Migrate old single-user format (flat settings, no drivers)
+      if(!DB0.drivers || Object.keys(DB0.drivers).length === 0){
+        const d = makeDefaultDriver('我');
+        if(parsed.settings) d.settings = parsed.settings;
+        d.fuelLogRecords = parsed.fuelLogRecords || [];
+        d.dailyRecords = parsed.dailyRecords || [];
+        d.expenseRecords = parsed.expenseRecords || [];
+        DB0.drivers = { d_default: d };
+        DB0.activeDriver = 'd_default';
+      }
+      if(!DB0.drivers[DB0.activeDriver]){
+        DB0.activeDriver = Object.keys(DB0.drivers)[0];
+      }
+      return DB0;
     }
   }catch(e){}
-  return defaults;
+  const def = makeDefaultDriver('我');
+  return Object.assign({}, globalDefaults, { drivers:{ d_default: def }, activeDriver:'d_default' });
 }
 
 let DB = loadData();
 
+function getActiveDriverId(){ return DB.activeDriver || 'd_default'; }
+
+function loadWorkingFromDriver(id){
+  const d = DB.drivers[id];
+  if(!d) return;
+  DB.settings = d.settings || makeDefaultDriver().settings;
+  DB.fuelLogRecords = d.fuelLogRecords || [];
+  DB.dailyRecords = d.dailyRecords || [];
+  DB.expenseRecords = d.expenseRecords || [];
+}
+loadWorkingFromDriver(getActiveDriverId());
+
+function syncWorkingToDriver(){
+  const id = getActiveDriverId();
+  if(!DB.drivers[id]) DB.drivers[id] = makeDefaultDriver();
+  const d = DB.drivers[id];
+  d.settings = DB.settings;
+  d.fuelLogRecords = DB.fuelLogRecords;
+  d.dailyRecords = DB.dailyRecords;
+  d.expenseRecords = DB.expenseRecords;
+}
+
 function saveData(){
-  localStorage.setItem(STORE_KEY, JSON.stringify(DB));
+  syncWorkingToDriver();
+  const out = {};
+  for(const k in DB){
+    if(DRIVER_FIELDS.includes(k)) continue; // stored inside drivers[id]
+    out[k] = DB[k];
+  }
+  localStorage.setItem(STORE_KEY, JSON.stringify(out));
+}
+
+/* ===== Multi-Driver Management ===== */
+function escapeHtml(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function renderDriverSelect(){
+  const sel = document.getElementById('driverSelect');
+  if(!sel) return;
+  sel.innerHTML = '';
+  Object.keys(DB.drivers).forEach(id => {
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = DB.drivers[id].name || id;
+    if(id === getActiveDriverId()) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function onDriverSelectChange(){
+  const sel = document.getElementById('driverSelect');
+  if(sel) switchDriver(sel.value);
+}
+
+function rerenderCurrentPage(){
+  const activePage = document.querySelector('.page.active');
+  const page = activePage ? activePage.id.replace('page-','') : 'home';
+  navigateTo(page);
+}
+
+function switchDriver(id){
+  if(!DB.drivers[id]) return;
+  syncWorkingToDriver();            // persist current active driver's data
+  DB.activeDriver = id;
+  loadWorkingFromDriver(id);        // load new active driver into flat working fields
+  saveData();
+  renderDriverSelect();
+  rerenderCurrentPage();
+}
+
+function promptAddDriver(){
+  const name = prompt(t('driver_add_prompt'), t('driver_new_default'));
+  if(name === null) return;
+  addDriver((name.trim() || t('driver_new_default')));
+}
+
+function addDriver(name){
+  const id = 'd_' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+  DB.drivers[id] = makeDefaultDriver(name);
+  switchDriver(id);
+  renderSettingsPage();
+}
+
+function renameDriver(id){
+  const cur = (DB.drivers[id] && DB.drivers[id].name) || '';
+  const name = prompt(t('driver_rename_prompt'), cur);
+  if(name === null) return;
+  DB.drivers[id].name = (name.trim() || cur);
+  saveData();
+  renderDriverSelect();
+  renderDriverManage();
+}
+
+function deleteDriver(id){
+  const ids = Object.keys(DB.drivers);
+  if(ids.length <= 1){
+    alert(t('driver_delete_last'));
+    return;
+  }
+  if(!confirm(t('driver_delete_confirm') + (DB.drivers[id].name || id) + '？')) return;
+  const wasActive = (id === getActiveDriverId());
+  delete DB.drivers[id];
+  if(wasActive) DB.activeDriver = Object.keys(DB.drivers)[0];
+  loadWorkingFromDriver(getActiveDriverId());
+  saveData();
+  renderDriverSelect();
+  renderDriverManage();
+  rerenderCurrentPage();
+}
+
+function renderDriverManage(){
+  const container = document.getElementById('driverManageList');
+  if(!container) return;
+  container.innerHTML = '';
+  Object.keys(DB.drivers).forEach(id => {
+    const d = DB.drivers[id];
+    const isActive = (id === getActiveDriverId());
+    const row = document.createElement('div');
+    row.className = 'driver-row' + (isActive ? ' active' : '');
+    const nameEl = document.createElement('div');
+    nameEl.className = 'driver-row-name';
+    nameEl.innerHTML = escapeHtml(d.name || id) + (isActive ? ' <span class="driver-badge">' + t('driver_current') + '</span>' : '');
+    row.appendChild(nameEl);
+
+    const actions = document.createElement('div');
+    actions.className = 'driver-row-actions';
+    if(!isActive){
+      const sw = document.createElement('button');
+      sw.className = 'btn btn-soft btn-sm';
+      sw.textContent = t('driver_switch');
+      sw.onclick = () => switchDriver(id);
+      actions.appendChild(sw);
+    }
+    const rn = document.createElement('button');
+    rn.className = 'btn btn-soft btn-sm';
+    rn.textContent = t('driver_rename');
+    rn.onclick = () => renameDriver(id);
+    actions.appendChild(rn);
+    if(Object.keys(DB.drivers).length > 1){
+      const dl = document.createElement('button');
+      dl.className = 'btn btn-danger btn-sm';
+      dl.textContent = t('driver_delete');
+      dl.onclick = () => deleteDriver(id);
+      actions.appendChild(dl);
+    }
+    row.appendChild(actions);
+    container.appendChild(row);
+  });
 }
 
 /* ===== Utilities ===== */
@@ -2196,32 +2200,6 @@ function getAvailableTaxYears(){
 }
 
 /* ===== Fuel Cost Logic ===== */
-function calculateCostPerMile(price, type, mpg){
-  if(type === 'perMile') return price;
-  if(!mpg || mpg <= 0) return 0;
-  if(type === 'perLitre'){
-    const pricePerGallon = price * LITRES_PER_GALLON;
-    return pricePerGallon / mpg;
-  }
-  if(type === 'perGallon'){
-    return price / mpg;
-  }
-  return 0;
-}
-
-function getLatestFuelRecord(){
-  if(DB.fuelRecords.length === 0) return null;
-  return DB.fuelRecords[DB.fuelRecords.length - 1];
-}
-
-function getFuelRecordForDate(dateStr){
-  let applicable = null;
-  for(const fr of DB.fuelRecords){
-    if(fr.date <= dateStr) applicable = fr;
-    else break;
-  }
-  return applicable;
-}
 
 /* ===== Tax Calculations ===== */
 function calculateIncomeTax(totalIncome){
@@ -2303,16 +2281,13 @@ function getActualFuelTotalForTaxYear(taxYear){
 
 function getSESummaryForTaxYear(taxYear){
   const records = DB.dailyRecords.filter(r => r.taxYear === taxYear);
-  let gross = 0, deliveries = 0, miles = 0;
+  let gross = 0, deliveries = 0;
   records.forEach(r => {
     gross += r.grossIncome;
     deliveries += r.deliveries;
-    miles += r.miles;
   });
 
-  const fuelExpenses = (DB.settings.fuelExpenseMode === 'actualTotal')
-    ? getActualFuelTotalForTaxYear(taxYear)
-    : records.reduce((s, r) => s + (r.fuelExpense || 0), 0);
+  const fuelExpenses = getActualFuelTotalForTaxYear(taxYear);
 
   const customExpenses = getExpensesByCategoryForTaxYear(taxYear);
   const systemTotalExpenses = fuelExpenses + Object.values(customExpenses).reduce((a,b) => a+b, 0);
@@ -2356,7 +2331,7 @@ function getSESummaryForTaxYear(taxYear){
     expenseItems,
     hasOverrides,
     profit: gross - finalExpenses,
-    deliveries, miles, workDays: records.length, records
+    deliveries, workDays: records.length, records
   };
 }
 
@@ -2523,7 +2498,7 @@ function renderHomePage(){
       deliveries += r.deliveries || 0;
     }
   });
-  DB.fuelRecords.forEach(r => {
+  DB.fuelLogRecords.forEach(r => {
     if(r.date >= start && r.date <= end){
       fuelCost += r.cost || 0;
     }
@@ -2662,36 +2637,10 @@ function renderDailyPage(){
   const expenseDateInput = document.getElementById('expenseDate');
   if(!expenseDateInput.value) expenseDateInput.value = todayStr();
 
-  // Auto-fill start mileage from last record's end mileage
-  const startInput = document.getElementById('dailyMileageStart');
-  const autoHint = document.getElementById('autoFillHint');
-  if(!startInput.value){
-    const lastRecord = getLastDailyMileage();
-    if(lastRecord !== null){
-      startInput.value = lastRecord;
-      const endInput = document.getElementById('dailyMileageEnd');
-      if(!endInput.value){
-        endInput.setAttribute('placeholder', (lastRecord + 100).toFixed(1));
-      }
-      if(autoHint) autoHint.style.display = 'block';
-    }
-  } else {
-    if(autoHint) autoHint.style.display = 'none';
-  }
-
   updateWeeklyStats();
   updateDailyPreview();
   renderDailyRecords();
   renderExpenseRecords();
-}
-
-function getLastDailyMileage(){
-  if(DB.dailyRecords.length === 0) return null;
-  const sorted = [...DB.dailyRecords].sort((a,b) => b.date.localeCompare(a.date));
-  for(const r of sorted){
-    if(r.endMileage != null && !isNaN(r.endMileage)) return r.endMileage;
-  }
-  return null;
 }
 
 function updateWeeklyStats(){
@@ -2717,55 +2666,26 @@ function updateWeeklyStats(){
 
 function updateDailyPreview(){
   const mode = incomeModeCurrent;
-  const dateStr = document.getElementById('dailyDate').value || todayStr();
   const deliveries = parseFloat(document.getElementById('dailyDeliveries').value) || 0;
   const directIncome = parseFloat(document.getElementById('dailyDirectIncome').value) || 0;
-  const startMileage = parseFloat(document.getElementById('dailyMileageStart').value);
-  const endMileage = parseFloat(document.getElementById('dailyMileageEnd').value);
-
-  let miles = 0;
-  const milesDisplay = document.getElementById('dailyMilesDisplay');
-  if(!isNaN(startMileage) && !isNaN(endMileage)){
-    miles = Math.max(0, endMileage - startMileage);
-    milesDisplay.textContent = t('daily_miles_display') + miles.toFixed(1) + ' mi';
-    milesDisplay.style.display = 'block';
-  } else {
-    milesDisplay.style.display = 'none';
-  }
 
   const hasIncome = mode === 'direct' ? directIncome > 0 : deliveries > 0;
-  if(!hasIncome && miles <= 0){
+  if(!hasIncome){
     document.getElementById('dailyPreview').style.display = 'none';
-    document.getElementById('dailyNoFuelWarning').style.display = 'none';
     return;
   }
 
   const rate = DB.settings.ratePerDelivery;
-  const fuelRec = getFuelRecordForDate(dateStr);
-
-  if(!fuelRec){
-    document.getElementById('dailyNoFuelWarning').style.display = 'block';
-    document.getElementById('dailyPreview').style.display = 'none';
-    return;
-  }
-
-  document.getElementById('dailyNoFuelWarning').style.display = 'none';
-  document.getElementById('dailyPreview').style.display = 'block';
-
   const gross = mode === 'direct' ? directIncome : deliveries * rate;
-  const fuel = miles * fuelRec.costPerMile;
-  const net = gross - fuel;
 
+  document.getElementById('dailyPreview').style.display = 'block';
   document.getElementById('previewGross').textContent = fmt(gross);
-  document.getElementById('previewFuel').textContent = fmt(fuel);
-  document.getElementById('previewNet').textContent = fmt(net);
+  document.getElementById('previewNet').textContent = fmt(gross);
 }
 
 // Live preview listeners
 document.getElementById('dailyDeliveries').addEventListener('input', updateDailyPreview);
 document.getElementById('dailyDirectIncome').addEventListener('input', updateDailyPreview);
-document.getElementById('dailyMileageStart').addEventListener('input', updateDailyPreview);
-document.getElementById('dailyMileageEnd').addEventListener('input', updateDailyPreview);
 document.getElementById('dailyDate').addEventListener('change', updateDailyPreview);
 
 let incomeModeCurrent = 'parcel';
@@ -2790,35 +2710,16 @@ function saveDailyRecord(e){
   const mode = incomeModeCurrent;
   const deliveries = parseInt(document.getElementById('dailyDeliveries').value) || 0;
   const directIncome = parseFloat(document.getElementById('dailyDirectIncome').value) || 0;
-  const startMileage = parseFloat(document.getElementById('dailyMileageStart').value);
-  const endMileage = parseFloat(document.getElementById('dailyMileageEnd').value);
-
-  let miles = 0;
-  if(!isNaN(startMileage) && !isNaN(endMileage)){
-    miles = endMileage - startMileage;
-    if(miles < 0){
-      alert(t('alert_end_before_start'));
-      return;
-    }
-  }
 
   const hasIncome = mode === 'direct' ? directIncome > 0 : deliveries > 0;
-  if(!hasIncome && miles <= 0){
-    alert(mode === 'direct' ? t('alert_enter_income_or_miles') : t('alert_enter_deliveries_or_miles'));
+  if(!hasIncome){
+    alert(mode === 'direct' ? t('alert_enter_income') : t('alert_enter_deliveries'));
     return;
   }
 
   const rate = DB.settings.ratePerDelivery;
-  const fuelRec = getFuelRecordForDate(dateStr);
-
-  if(!fuelRec){
-    alert(t('alert_no_fuel'));
-    return;
-  }
-
   const gross = mode === 'direct' ? directIncome : deliveries * rate;
-  const fuel = miles * fuelRec.costPerMile;
-  const net = gross - fuel;
+  const net = gross;
 
   const existingIdx = DB.dailyRecords.findIndex(r => r.date === dateStr);
   const record = {
@@ -2827,13 +2728,9 @@ function saveDailyRecord(e){
     incomeMode: mode,
     deliveries: mode === 'direct' ? 0 : deliveries,
     directIncome: mode === 'direct' ? directIncome : 0,
-    miles,
-    startMileage: !isNaN(startMileage) ? startMileage : null,
-    endMileage: !isNaN(endMileage) ? endMileage : null,
     ratePerDelivery: mode === 'direct' ? 0 : rate,
-    costPerMile: fuelRec.costPerMile,
     grossIncome: gross,
-    fuelExpense: fuel,
+    fuelExpense: 0,
     netIncome: net,
     createdAt: new Date().toISOString(),
   };
@@ -2850,12 +2747,7 @@ function saveDailyRecord(e){
 
   document.getElementById('dailyDeliveries').value = '';
   document.getElementById('dailyDirectIncome').value = '';
-  document.getElementById('dailyMileageStart').value = '';
-  document.getElementById('dailyMileageEnd').value = '';
-  document.getElementById('dailyMilesDisplay').style.display = 'none';
   document.getElementById('dailyPreview').style.display = 'none';
-  const autoHint = document.getElementById('autoFillHint');
-  if(autoHint) autoHint.style.display = 'none';
   resetIncomeModeToDefault();
 
   if(e && e.currentTarget) flashSaved(e.currentTarget, null, 'saved_label');
@@ -2882,19 +2774,17 @@ function renderDailyRecords(){
   }
 
   const uDel = t('unit_deliveries');
-  const uPer = t('unit_per_delivery');
   const rInc = t('record_inc');
-  const rFuel = t('record_fuel');
 
   container.innerHTML = records.map(r => `
     <div class="record-item">
       <div class="record-info">
         <div class="record-date">${formatDateDisplay(r.date)}</div>
-        <div class="record-detail">${r.incomeMode === 'direct' ? '💷 ' + t('record_direct') + ' · ' + r.miles + ' mi' : r.deliveries + ' ' + uDel + ' · ' + r.miles + ' mi · ' + fmt(r.ratePerDelivery) + uPer}</div>
+        <div class="record-detail">${r.incomeMode === 'direct' ? '💷 ' + t('record_direct') : r.deliveries + ' ' + uDel}</div>
       </div>
       <div style="text-align:right">
         <div class="record-amount net">${fmt(r.netIncome)}</div>
-        <div class="record-amount muted">${rInc} ${fmt(r.grossIncome)} · ${rFuel} ${fmt(r.fuelExpense)}</div>
+        <div class="record-amount muted">${rInc} ${fmt(r.grossIncome)}</div>
       </div>
       <button class="delete-btn" onclick="deleteDailyRecord('${r.date}')" title="刪除記錄">✕</button>
     </div>
@@ -2998,167 +2888,16 @@ function getSystemExpensesTotal(taxYear){
 }
 
 /* ===== Fuel Page ===== */
-let currentFuelTab = 'perLitre';
-
 function renderFuelPage(){
-  const dateInput = document.getElementById('fuelDate');
-  if(!dateInput.value) dateInput.value = todayStr();
-
   const logDateInput = document.getElementById('fuelLogDate');
   if(!logDateInput.value) logDateInput.value = todayStr();
-
-  const firstUseBanner = document.getElementById('fuelFirstUseBanner');
-  if(firstUseBanner) firstUseBanner.style.display = 'none';
-
-  const latest = getLatestFuelRecord();
-  if(latest){
-    document.getElementById('currentCostPerMile').textContent = fmt(latest.costPerMile);
-    let detail = '';
-    if(latest.type === 'perMile'){
-      detail = ' (' + t('fuel_direct_input') + ')';
-    } else if(latest.type === 'perLitre'){
-      detail = ` (${t('fuel_price_label')} ${(latest.pricePerLitre * 100).toFixed(1)}p/L)`;
-    } else {
-      detail = ` (${t('fuel_price_label')} £${latest.pricePerGallon?.toFixed(2)}/Gal)`;
-    }
-    document.getElementById('currentFuelDate').textContent = t('fuel_updated_date') + formatDateDisplay(latest.date) + detail;
-  }
-
-  renderFuelHistory();
   renderFuelLog();
-  updateFuelConversion();
-}
-
-function switchFuelTab(tab){
-  currentFuelTab = tab;
-  document.querySelectorAll('.tab-btn[data-fuel-tab]').forEach(b => b.classList.remove('active'));
-  document.querySelector(`.tab-btn[data-fuel-tab="${tab}"]`).classList.add('active');
-  document.querySelectorAll('.fuel-input-section').forEach(s => s.style.display = 'none');
-  document.getElementById('fuelInput' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
-  updateFuelConversion();
-}
-
-// Live conversion preview
-['fuelPricePerLitre','fuelPricePerGallon','fuelCostPerMile'].forEach(id => {
-  document.getElementById(id).addEventListener('input', updateFuelConversion);
-});
-
-function updateFuelConversion(){
-  const mpg = DB.settings.mpg;
-  let price = 0;
-  let converted = 0;
-
-  if(currentFuelTab === 'perLitre'){
-    price = (parseFloat(document.getElementById('fuelPricePerLitre').value) || 0) / 100;
-    if(price > 0) converted = calculateCostPerMile(price, 'perLitre', mpg);
-  } else if(currentFuelTab === 'perGallon'){
-    price = parseFloat(document.getElementById('fuelPricePerGallon').value) || 0;
-    if(price > 0) converted = calculateCostPerMile(price, 'perGallon', mpg);
-  } else {
-    price = parseFloat(document.getElementById('fuelCostPerMile').value) || 0;
-    if(price > 0) converted = price;
-  }
-
-  if(converted > 0){
-    document.getElementById('fuelConvertPreview').style.display = 'block';
-    document.getElementById('convertedCostPerMile').textContent = fmt(converted);
-  } else {
-    document.getElementById('fuelConvertPreview').style.display = 'none';
-  }
-}
-
-function saveFuelRecord(e){
-  const dateStr = document.getElementById('fuelDate').value || todayStr();
-  let price = 0, costPerMile = 0, type = currentFuelTab;
-
-  if(type === 'perLitre'){
-    price = (parseFloat(document.getElementById('fuelPricePerLitre').value) || 0) / 100;
-    if(price <= 0){ alert(t('alert_enter_fuel_price')); return; }
-    costPerMile = calculateCostPerMile(price, 'perLitre', DB.settings.mpg);
-  } else if(type === 'perGallon'){
-    price = parseFloat(document.getElementById('fuelPricePerGallon').value) || 0;
-    if(price <= 0){ alert(t('alert_enter_fuel_price')); return; }
-    costPerMile = calculateCostPerMile(price, 'perGallon', DB.settings.mpg);
-  } else {
-    price = parseFloat(document.getElementById('fuelCostPerMile').value) || 0;
-    if(price <= 0){ alert(t('alert_enter_cost_per_mile')); return; }
-    costPerMile = price;
-  }
-
-  DB.fuelRecords = DB.fuelRecords.filter(r => r.date !== dateStr);
-
-  const record = {
-    date: dateStr,
-    type,
-    costPerMile,
-  };
-
-  if(type === 'perLitre') record.pricePerLitre = price;
-  if(type === 'perGallon') record.pricePerGallon = price;
-  if(type === 'perMile') record.directCostPerMile = price;
-
-  DB.fuelRecords.push(record);
-  DB.fuelRecords.sort((a,b) => a.date.localeCompare(b.date));
-
-  saveData();
-
-  if(type === 'perLitre') document.getElementById('fuelPricePerLitre').value = '';
-  if(type === 'perGallon') document.getElementById('fuelPricePerGallon').value = '';
-  if(type === 'perMile') document.getElementById('fuelCostPerMile').value = '';
-
-  const banner = document.getElementById('fuelFirstUseBanner');
-  if(banner) banner.style.display = 'none';
-
-  if(e && e.currentTarget) flashSaved(e.currentTarget, null, 'saved_label');
-  renderFuelPage();
-}
-
-function deleteFuelRecord(date){
-  if(!confirm(t('alert_delete_fuel'))) return;
-  DB.fuelRecords = DB.fuelRecords.filter(r => r.date !== date);
-  saveData();
-  renderFuelPage();
-}
-
-function renderFuelHistory(){
-  const container = document.getElementById('fuelHistory');
-  const all = [...DB.fuelRecords].reverse();
-
-  if(all.length === 0){
-    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⛽</div><div class="empty-state-text">' + t('empty_fuel') + '</div></div>';
-    return;
-  }
-
-  const records = filterByView(all, recordViewMode.fuel, 'date');
-  if(records.length === 0){
-    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⛽</div><div class="empty-state-text">' + t('empty_period') + '</div></div>';
-    return;
-  }
-
-  container.innerHTML = records.map(r => {
-    let detail = '';
-    if(r.type === 'perLitre') detail = `${(r.pricePerLitre * 100).toFixed(1)}p/L`;
-    else if(r.type === 'perGallon') detail = `£${r.pricePerGallon?.toFixed(2)}/Gal`;
-    else detail = t('fuel_direct_input');
-
-    return `
-      <div class="record-item">
-        <div class="record-info">
-          <div class="record-date">${formatDateDisplay(r.date)}</div>
-          <div class="record-detail">${detail} → ${fmt(r.costPerMile)}/mi</div>
-        </div>
-        <div class="record-amount net">${fmt(r.costPerMile)}/mi</div>
-        <button class="delete-btn" onclick="deleteFuelRecord('${r.date}')" title="刪除記錄">✕</button>
-      </div>
-    `;
-  }).join('');
 }
 
 /* ===== Fuel-up Log ===== */
 function renderFuelLog(){
   const container = document.getElementById('fuelLogRecords');
   if(!container) return;
-  renderFuelLogMPG();
 
   if(DB.fuelLogRecords.length === 0){
     container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⛽</div><div class="empty-state-text">' + t('empty_fuelog') + '</div></div>';
@@ -3177,7 +2916,7 @@ function renderFuelLog(){
     <div class="record-item">
       <div class="record-info">
         <div class="record-date">${formatDateDisplay(r.date)}</div>
-        <div class="record-detail">${(r.mileage != null ? fmt(r.mileage) : '—')} mi · ${r.litres} L · ${fmt(r.cost)}</div>
+        <div class="record-detail">${r.litres} L · ${fmt(r.cost)}</div>
       </div>
       <div style="text-align:right">
         <div class="record-amount muted">${r.costPerLitre ? (r.costPerLitre * 100).toFixed(1) + 'p/L' : ''}</div>
@@ -3189,8 +2928,6 @@ function renderFuelLog(){
 
 function saveFuelLog(e){
   const dateStr = document.getElementById('fuelLogDate').value || todayStr();
-  const rawMileage = document.getElementById('fuelLogMileage').value;
-  const mileage = (rawMileage === '' || isNaN(parseFloat(rawMileage))) ? null : parseFloat(rawMileage);
   const litres = parseFloat(document.getElementById('fuelLogLitres').value) || 0;
   const cost = parseFloat(document.getElementById('fuelLogCost').value) || 0;
 
@@ -3205,7 +2942,6 @@ function saveFuelLog(e){
     id: 'fl_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
     date: dateStr,
     taxYear: getTaxYear(dateStr),
-    mileage,
     litres,
     cost,
     costPerLitre,
@@ -3216,9 +2952,6 @@ function saveFuelLog(e){
   DB.fuelLogRecords.sort((a,b) => a.date.localeCompare(b.date));
   saveData();
 
-  autoCalcMPGFromLog(true);
-
-  document.getElementById('fuelLogMileage').value = '';
   document.getElementById('fuelLogLitres').value = '';
   document.getElementById('fuelLogCost').value = '';
 
@@ -3234,39 +2967,6 @@ function deleteFuelLog(id){
   renderFuelLog();
 }
 
-function computeActualMPG(){
-  const sorted = [...DB.fuelLogRecords].sort((a,b) => a.date.localeCompare(b.date) || a.createdAt.localeCompare(b.createdAt));
-  if(sorted.length < 2) return null;
-  const prev = sorted[sorted.length - 2];
-  const curr = sorted[sorted.length - 1];
-  if(curr.mileage == null || prev.mileage == null || curr.mileage <= prev.mileage || curr.litres <= 0) return null;
-  const miles = curr.mileage - prev.mileage;
-  const gallons = curr.litres / LITRES_PER_GALLON;
-  return miles / gallons;
-}
-
-function renderFuelLogMPG(){
-  const el = document.getElementById('fuelLogMPGDisplay');
-  if(!el) return;
-  const mpg = computeActualMPG();
-  el.textContent = mpg == null ? '—' : mpg.toFixed(1);
-}
-
-function autoCalcMPGFromLog(silent){
-  const mpg = computeActualMPG();
-  if(mpg == null){
-    if(!silent) alert(t('mpg_autocalc_insufficient'));
-    return false;
-  }
-  DB.settings.mpg = parseFloat(mpg.toFixed(1));
-  saveData();
-  const setMpg = document.getElementById('setMPG');
-  if(setMpg) setMpg.value = DB.settings.mpg;
-  updateFuelConversion();
-  renderFuelLogMPG();
-  if(!silent) alert(t('mpg_autocalc_applied') + DB.settings.mpg + ' MPG');
-  return true;
-}
 /* ===== Tax Page ===== */
 let currentTaxYear = getCurrentTaxYear();
 
@@ -3494,6 +3194,9 @@ function renderAnnualPage(){
   } else {
     expContainer.innerHTML = '';
   }
+  if(DB.fuelLogRecords.length === 0){
+    expContainer.innerHTML += '<div class="notice warn" style="margin-top:8px">' + t('fuel_mode_warn_empty') + '</div>';
+  }
   document.getElementById('annIncomeTax').textContent = fmt(calc.incomeTax);
   document.getElementById('annClass4NI').textContent = fmt(calc.class4NI);
   document.getElementById('annPAYE').textContent = fmt(calc.emp.tax);
@@ -3506,16 +3209,14 @@ function renderAnnualPage(){
   const [aStart, aEnd] = getViewRange(recordViewMode.annual);
   const viewRecords = calc.se.records.filter(r => r.date >= aStart && r.date <= aEnd);
   let vWorkDays = viewRecords.length;
-  let vDeliveries = 0, vMiles = 0, vGross = 0;
+  let vDeliveries = 0, vGross = 0;
   viewRecords.forEach(r => {
     vDeliveries += r.deliveries;
-    vMiles += r.miles;
     vGross += r.grossIncome;
   });
 
   document.getElementById('annWorkDays').textContent = fmtNum(vWorkDays);
   document.getElementById('annTotalDeliveries').textContent = fmtNum(vDeliveries);
-  document.getElementById('annTotalMiles').textContent = fmtNum(Math.round(vMiles)) + ' mi';
   const avgDaily = vWorkDays > 0 ? vGross / vWorkDays : 0;
   document.getElementById('annAvgDaily').textContent = fmt(avgDaily);
 
@@ -3537,7 +3238,7 @@ function renderAnnualPage(){
       <div class="record-item">
         <div class="record-info">
           <div class="record-date">${formatDateDisplay(r.date)}</div>
-          <div class="record-detail">${r.incomeMode === 'direct' ? '💷 ' + t('record_direct') + ' · ' + r.miles + ' mi' : r.deliveries + ' ' + uDel + ' · ' + r.miles + ' mi'}</div>
+          <div class="record-detail">${r.incomeMode === 'direct' ? '💷 ' + t('record_direct') : r.deliveries + ' ' + uDel}</div>
         </div>
         <div style="text-align:right">
           <div class="record-amount income">${fmt(r.grossIncome)}</div>
@@ -3586,12 +3287,23 @@ function renderSettingsPage(){
   document.getElementById('setRatePerDelivery').value = DB.settings.ratePerDelivery;
   const modeSel = document.getElementById('setIncomeModeDefault');
   if(modeSel) modeSel.value = DB.settings.incomeModeDefault || 'parcel';
-  document.getElementById('setMPG').value = DB.settings.mpg;
-  const fuelModeSel = document.getElementById('setFuelExpenseMode');
-  if(fuelModeSel) fuelModeSel.value = DB.settings.fuelExpenseMode || 'perMile';
+  updateFuelModeWarning();
   renderTaxRuleFields();
   exitTaxEditMode();
   updateBackupDateDisplay();
+  renderDriverManage();
+}
+
+/* Show a warning when "Actual fuel total" is selected but no fuel-up records exist */
+function updateFuelModeWarning(){
+  const warn = document.getElementById('fuelModeWarn');
+  if(!warn) return;
+  if(DB.fuelLogRecords.length === 0){
+    warn.style.display = 'block';
+    warn.innerHTML = t('fuel_mode_warn_empty');
+  } else {
+    warn.style.display = 'none';
+  }
 }
 
 /* ===== Tax Rule Editing ===== */
@@ -3789,21 +3501,8 @@ function saveSettings(){
   DB.settings.ratePerDelivery = newRate;
   const modeSel = document.getElementById('setIncomeModeDefault');
   if(modeSel) DB.settings.incomeModeDefault = modeSel.value === 'direct' ? 'direct' : 'parcel';
-  const fuelModeSel = document.getElementById('setFuelExpenseMode');
-  if(fuelModeSel) DB.settings.fuelExpenseMode = fuelModeSel.value === 'actualTotal' ? 'actualTotal' : 'perMile';
   saveData();
   renderSettingsPage();
-}
-
-function saveMPG(){
-  const mpg = parseFloat(document.getElementById('setMPG').value);
-  if(isNaN(mpg) || mpg <= 0){
-    alert(t('alert_valid_mpg'));
-    return;
-  }
-  DB.settings.mpg = mpg;
-  saveData();
-  alert(t('alert_mpg_saved_prefix') + mpg + t('alert_mpg_saved_suffix'));
 }
 
 function exportData(){
@@ -3830,19 +3529,30 @@ function importData(event){
   reader.onload = function(e){
     try{
       const parsed = JSON.parse(e.target.result);
-      if(!parsed || typeof parsed !== 'object' || !parsed.settings){
+      if(!parsed || typeof parsed !== 'object'){
         alert(t('alert_import_error'));
         event.target.value = '';
         return;
       }
-      DB = loadData();
-      DB = Object.assign(DB, parsed, {
-        refAllowanceVisibility: parsed.refAllowanceVisibility || {},
-        taxRefOverrides: parsed.taxRefOverrides || {},
-        taxRuleOverrides: parsed.taxRuleOverrides || {},
-        expenseOverrides: parsed.expenseOverrides || {},
+      // Accept either new (drivers) or old (flat settings) export format
+      if(!parsed.drivers && !parsed.settings){
+        alert(t('alert_import_error'));
+        event.target.value = '';
+        return;
+      }
+      DB = loadData(); // fresh defaults; loadData migrates old flat format into drivers
+      // merge global (shared) fields
+      ['expenseOverrides','taxRuleOverrides','taxRefOverrides','refAllowanceVisibility','employedData'].forEach(k => {
+        if(parsed[k] !== undefined) DB[k] = parsed[k];
       });
+      // if import is the new multi-driver format, replace drivers wholesale
+      if(parsed.drivers && Object.keys(parsed.drivers).length > 0){
+        DB.drivers = parsed.drivers;
+      }
+      if(!DB.drivers[DB.activeDriver]) DB.activeDriver = Object.keys(DB.drivers)[0];
+      loadWorkingFromDriver(getActiveDriverId());
       saveData();
+      renderDriverSelect();
       alert(t('alert_import_success'));
       navigateTo('home');
       renderHomePage();
@@ -3884,7 +3594,7 @@ function updateBackupDateDisplay(){
 }
 
 function hasDataToBackup(){
-  return DB.dailyRecords.length > 0 || DB.expenseRecords.length > 0 || DB.fuelRecords.length > 0;
+  return DB.dailyRecords.length > 0 || DB.expenseRecords.length > 0;
 }
 
 function checkBackupReminder(){
@@ -3948,11 +3658,13 @@ window.addEventListener('DOMContentLoaded', () => {
   } else {
     currentLang = localStorage.getItem('driverTaxLang');
     applyLanguage();
+    renderDriverSelect();
     navigateTo('home');
     renderHomePage();
     showGreeting();
     setTimeout(checkBackupReminder, 1500);
   }
+  renderDriverSelect();
 });
 </script>
 </body>
