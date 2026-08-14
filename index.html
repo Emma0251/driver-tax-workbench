@@ -24,6 +24,7 @@
   --tax:#EA580C;--tax-light:#FFEDD5;
   --net:#7C3AED;--net-light:#EDE9FE;
   --danger:#DC2626;--danger-light:#FEE2E2;
+  --warn:#D97706;--warn-light:#FEF3C7;
   --text:#1F2937;--text-mid:#4B5563;--text-light:#9CA3AF;
   --border:#E9D5FF;--border-soft:#F3E8FF;
   --shadow:0 2px 12px rgba(139,92,246,.1);
@@ -220,6 +221,12 @@ body{
 .record-amount.income{color:var(--income)}
 .record-amount.net{color:var(--net)}
 .record-amount.muted{color:var(--text-light);font-weight:500;font-size:12px}
+.record-amount.bad{color:var(--danger)}
+.record-amount.ok{color:var(--income)}
+.tag-ok{color:var(--income);font-weight:700}
+.tag-bad{color:var(--danger);font-weight:700}
+.tag-warn{color:var(--warn);font-weight:700}
+.field-hint{font-size:11px;color:var(--text-light);margin-top:4px;line-height:1.4}
 
 .delete-btn{
   width:34px;height:34px;border:1.5px solid var(--danger);border-radius:8px;
@@ -243,6 +250,59 @@ body{
 .record-scroll::-webkit-scrollbar{width:5px}
 .record-scroll::-webkit-scrollbar-track{background:transparent}
 .record-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ===== Payroll weekly table ===== */
+.table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:4px}
+.pay-table{border-collapse:collapse;width:100%;font-size:13px;min-width:520px}
+.pay-table th{
+  text-align:left;padding:8px 8px;font-size:11px;font-weight:700;color:var(--text-mid);
+  border-bottom:2px solid var(--border);white-space:nowrap;
+}
+.pay-table th .en{font-size:9px;color:var(--text-light);font-weight:500;display:block}
+.pay-table td{padding:8px 8px;border-bottom:1px solid var(--border-soft);vertical-align:middle}
+.pay-table tr:last-child td{border-bottom:none}
+.pay-fri{font-weight:700;color:var(--primary-deep);white-space:nowrap}
+.pay-range{color:var(--text-light);font-size:12px;white-space:nowrap}
+.pay-num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pay-diff{font-weight:700;white-space:nowrap}
+.pay-actual{width:120px}
+.input-prefix-wrap.sm .input-field{padding-left:26px;height:32px;font-size:13px}
+.input-prefix-wrap.sm .input-prefix{font-size:13px;left:10px}
+.pay-input{text-align:right}
+.btn-mini{display:inline-block;padding:5px 8px;border:1px solid var(--border);background:var(--bg);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;line-height:1.2;transition:.15s}
+.btn-mini:hover{filter:brightness(.97)}
+.pay-month-bar{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.btn-mini-active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-mini-active:hover{filter:brightness(1.03)}
+@media (max-width:640px){
+  .btn-mini{width:100%;text-align:center}
+}
+
+/* 窄屏：轉做每週卡片，避免左右滑動 */
+@media (max-width:640px){
+  .table-scroll{overflow:visible}
+  .pay-table{min-width:0;font-size:13px}
+  .pay-table thead{display:none}
+  .pay-table tbody,.pay-table tr,.pay-table td{display:block;width:auto}
+  .pay-table tr{
+    margin:12px 0;padding:12px 14px;
+    background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:14px;
+  }
+  .pay-table td{
+    padding:7px 0;border-bottom:1px dashed var(--border-soft);
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+  }
+  .pay-table tr td:last-child{border-bottom:none}
+  .pay-table td::before{
+    content:attr(data-label);font-weight:700;color:var(--text-mid);font-size:12px;flex:0 0 auto;
+  }
+  .pay-fri{color:var(--primary-deep);font-size:15px}
+  .pay-fri,.pay-range,.pay-num,.pay-actual{white-space:normal}
+  .pay-actual{width:auto}
+  .pay-actual .input-prefix-wrap{width:150px}
+  .pay-num{text-align:right}
+  .pay-diff{font-size:15px}
+}
 
 .section-divider{
   height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);
@@ -711,6 +771,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{
       </a>
       <a class="nav-item" data-page="fuel" onclick="navigateTo('fuel')">
         <span class="nav-icon">⛽</span><span class="nav-label" data-i18n="nav_fuel">油價與行車</span>
+      </a>
+      <a class="nav-item" data-page="pay" onclick="navigateTo('pay')">
+        <span class="nav-icon">💷</span><span class="nav-label" data-i18n="nav_pay">每週出糧</span>
       </a>
       <a class="nav-item" data-page="tax" onclick="navigateTo('tax')">
         <span class="nav-icon">💰</span><span class="nav-label" data-i18n="nav_tax">稅務計算</span>
@@ -1240,6 +1303,37 @@ input[type="date"]::-webkit-calendar-picker-indicator{
       </div>
     </div>
 
+    <!-- ==================== Page: Payroll (Weekly) ==================== -->
+    <div class="page" id="page-pay">
+      <div class="page-header">
+        <div class="page-title" data-i18n="pay_title">💷 每週出糧</div>
+        <div class="page-subtitle" data-i18n="pay_subtitle">逢星期五出糧 · 自動計件數同應出糧</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" data-i18n="pay_table_title">📋 每週出糧表 <span class="en">Weekly Pay Table</span></div>
+        <div class="field-hint" data-i18n="pay_table_hint">「件數」同「應出糧」由你啲每日紀錄自動加埋（每週一至六）。出糧日 = 工作週六之後兩個星期五（即兩星期後出糧）。你淨係要喺「實際出糧」填老細匯咗幾多，App 自動對比你預計應出，話你知有冇出少錢。</div>
+        <div class="pay-month-bar" id="payMonthBar" style="display:none"></div>
+        <div class="table-scroll">
+          <table class="pay-table" id="payTable">
+            <thead>
+              <tr>
+                <th data-i18n="pay_col_week">出糧日 (五)<span class="en">Pay Fri</span></th>
+                <th data-i18n="pay_col_range">涵蓋星期<span class="en">Week</span></th>
+                <th data-i18n="pay_col_items">件數<span class="en">Items</span></th>
+                <th data-i18n="pay_col_expected">應出糧<span class="en">Expected</span></th>
+                <th data-i18n="pay_col_actual">實際出糧<span class="en">Actual</span></th>
+                <th data-i18n="pay_col_diff">差額<span class="en">Diff</span></th>
+              </tr>
+            </thead>
+            <tbody id="payTableBody"></tbody>
+          </table>
+        </div>
+        <div class="field-hint" data-i18n="pay_auto_note">未填「實際出糧」嘅週會自動擺喺最底。改咗每日紀錄後，撳下面「重新整理」更新件數同應出糧。</div>
+        <button class="btn btn-secondary" onclick="renderPayPage()" data-i18n="pay_refresh">🔄 重新整理</button>
+      </div>
+    </div>
+
     <!-- ==================== Page: Settings ==================== -->
     <div class="page" id="page-settings">
       <div class="page-header">
@@ -1737,6 +1831,29 @@ const I18N = {
   driver_delete_last: { zh:'必須保留至少一位司機', en:'You must keep at least one driver' },
   driver_delete_confirm: { zh:'確定刪除司機？此司機的所有記錄將被永久刪除：', en:'Delete this driver? All of this driver\'s records will be permanently removed: ' },
 
+  /* --- Payroll (Weekly) Page --- */
+  nav_pay: { zh:'每週出糧', en:'Weekly Pay' },
+  pay_title: { zh:'💷 每週出糧', en:'💷 Weekly Pay' },
+  pay_subtitle: { zh:'每週一至六為期 · 兩星期後星期五出糧', en:'Weekly (Mon–Sat) · paid on the Friday 2 weeks later' },
+  pay_table_title: { zh:'📋 每週出糧表 <span class="en">Weekly Pay Table</span>', en:'📋 Weekly Pay Table' },
+  pay_table_hint: { zh:'「件數」同「應出糧」由你啲每日紀錄自動加埋（每週一至六）。出糧日 = 工作週六之後兩個星期五（即兩星期後出糧）。你淨係要喺「實際出糧」填老細匯咗幾多，App 自動對比你預計應出，話你知有冇出少錢。', en:'Items & expected pay are auto-summed from your Mon–Sat daily records. Pay day = the Friday two weeks after the week\'s Saturday. Just enter the actual amount paid; the app compares and flags any shortfall.' },
+  pay_col_week: { zh:'出糧日 (五)<span class="en">Pay Fri</span>', en:'Pay Fri' },
+  pay_col_range: { zh:'涵蓋星期<span class="en">Week</span>', en:'Week' },
+  pay_col_items: { zh:'件數<span class="en">Items</span>', en:'Items' },
+  pay_col_expected: { zh:'應出糧<span class="en">Expected</span>', en:'Expected' },
+  pay_col_actual: { zh:'實際出糧<span class="en">Actual</span>', en:'Actual' },
+  pay_col_diff: { zh:'差額<span class="en">Diff</span>', en:'Diff' },
+  pay_auto_note: { zh:'未填「實際出糧」嘅週會自動擺喺最底。改咗每日紀錄後，撳下面「重新整理」更新件數同應出糧。', en:'Weeks without an actual amount go to the bottom. After editing daily records, tap "Refresh" to update items & expected pay.' },
+  pay_month_empty: { zh:'呢個月份暫時無出糧紀錄', en:'No pay records for this month' },
+  pay_refresh: { zh:'🔄 重新整理', en:'🔄 Refresh' },
+  pay_shortfall: { zh:'老細出少咗', en:'Underpaid' },
+  pay_overpay: { zh:'出多咗', en:'Overpaid' },
+  pay_exact: { zh:'出齊', en:'Exact' },
+  pay_input_placeholder: { zh:'填實際出糧', en:'Enter actual' },
+  alert_delete_pay: { zh:'確定刪除此出糧記錄？', en:'Delete this pay record?' },
+  empty_pay: { zh:'尚無每日紀錄，請先去「今日統計」記低每日起碼入息', en:'No daily records yet — add daily income under Today\'s Stats first.' },
+
+
   /* --- Settings Page (JS dynamic) --- */
   alert_valid_rate: { zh:'請輸入有效的每件報酬', en:'Please enter a valid rate per delivery.' },
   alert_tax_rules_updated: { zh:'稅務規則已更新並套用至所有稅項計算', en:'Tax rules updated and applied to all calculations.' },
@@ -1854,6 +1971,8 @@ function applyLanguage(){
   const qEl = document.getElementById('homeQuoteText');
   if(qEl) qEl.textContent = pickQuote();
   renderGreetingHello();
+  // 語言切換時重繪出糧表（data-label / 卡片欄位名跟語言）
+  if(document.getElementById('payTableBody')) renderPayTable();
 }
 
 function updateLangSwitchButtons(){
@@ -1989,7 +2108,7 @@ function hasTaxRuleOverrides(){
 const STORE_KEY = 'driverTaxWorkbench_v1';
 
 /* Per-driver data fields (kept independent per driver) */
-const DRIVER_FIELDS = ['settings','fuelLogRecords','dailyRecords','expenseRecords'];
+const DRIVER_FIELDS = ['settings','fuelLogRecords','dailyRecords','expenseRecords','payrollRecords'];
 
 function makeDefaultDriver(name){
   return {
@@ -1998,6 +2117,7 @@ function makeDefaultDriver(name){
     fuelLogRecords: [],
     dailyRecords: [],
     expenseRecords: [],
+    payrollRecords: [],
     employedData: {},
   };
 }
@@ -2041,6 +2161,12 @@ function loadData(){
         DB0.activeDriver = Object.keys(DB0.drivers)[0];
       }
       migrateEmployedDataIntoDrivers(DB0);
+      // Strip legacy hide flags (hide feature removed)
+      let strippedHidden = false;
+      Object.values(DB0.drivers).forEach(dr => {
+        (dr.payrollRecords || []).forEach(p => { if('hidden' in p){ delete p.hidden; strippedHidden = true; } });
+      });
+      DB0.__stripHidden = strippedHidden;
       return DB0;
     }
   }catch(e){}
@@ -2078,8 +2204,10 @@ function loadWorkingFromDriver(id){
   DB.fuelLogRecords = d.fuelLogRecords || [];
   DB.dailyRecords = d.dailyRecords || [];
   DB.expenseRecords = d.expenseRecords || [];
+  DB.payrollRecords = d.payrollRecords || [];
 }
 loadWorkingFromDriver(getActiveDriverId());
+if(DB.__stripHidden){ delete DB.__stripHidden; saveData(); }
 
 function syncWorkingToDriver(){
   const id = getActiveDriverId();
@@ -2089,6 +2217,7 @@ function syncWorkingToDriver(){
   d.fuelLogRecords = DB.fuelLogRecords;
   d.dailyRecords = DB.dailyRecords;
   d.expenseRecords = DB.expenseRecords;
+  d.payrollRecords = DB.payrollRecords;
 }
 
 function saveData(){
@@ -2406,6 +2535,7 @@ function navigateTo(page){
   if(page === 'home') renderHomePage();
   if(page === 'daily') renderDailyPage();
   if(page === 'fuel') renderFuelPage();
+  if(page === 'pay') renderPayPage();
   if(page === 'tax') renderTaxPage();
   if(page === 'annual') renderAnnualPage();
   if(page === 'settings') renderSettingsPage();
@@ -2996,6 +3126,213 @@ function deleteFuelLog(id){
   DB.fuelLogRecords = DB.fuelLogRecords.filter(r => r.id !== id);
   saveData();
   renderFuelLog();
+}
+
+/* ===== Payroll (Weekly) ===== */
+// Pay weeks run Fri -> next Thu. payFriday = the Friday you get paid.
+// 本地午夜日期（避免 'YYYY-MM-DD' 被當 UTC 解析導致 GMT+1 環境差 1 小時）
+function ldate(s){
+  const p = String(s).split('-').map(Number);
+  return new Date(p[0], (p[1]||1) - 1, p[2]||1);
+}
+// 工作週：每週星期一(一)至星期六(六)。出糧日 = 該週六之後兩個星期五（即兩星期後嘅星期五）。
+// 每張每日紀錄歸入「出糧星期五」作為週 key（貼合用家按糧單日期記錄）。
+// 反推：出糧星期五 − 13 日 = 工作週六；− 18 日 = 工作週一。
+function mondayOf(d){
+  const x = ldate(d); x.setHours(0,0,0,0);
+  const back = (x.getDay() + 6) % 7; // Mon=0, Tue=1 ... Sun=6
+  x.setDate(x.getDate() - back);
+  return x;
+}
+function saturdayOf(d){
+  const mon = mondayOf(d);
+  const sat = new Date(mon); sat.setHours(0,0,0,0);
+  sat.setDate(sat.getDate() + 5); // Mon+5 = Sat
+  return sat;
+}
+// 出糧星期五 = 工作週六 + 13 日（週六→下個週五係 +6，再加一週 +7 = +13，即兩星期後嘅星期五）
+function payFridayForDate(dateStr){
+  const sat = saturdayOf(dateStr);
+  const fri = new Date(sat); fri.setHours(0,0,0,0);
+  fri.setDate(fri.getDate() + 13);
+  return ymd(fri);
+}
+// 由出糧星期五反推所屬工作週（週一 ~ 週六）
+function workWeekRange(payFridayStr){
+  const pf = ldate(payFridayStr); pf.setHours(0,0,0,0);
+  const sat = new Date(pf); sat.setDate(sat.getDate() - 13); // 工作週六
+  const mon = new Date(pf); mon.setDate(mon.getDate() - 18); // 工作週一
+  return { mon, sat };
+}
+// dateStr 呢度係「出糧星期五」；加總佢對應工作週（週一~週六）嘅每日紀錄
+function weekSum(dateStr){
+  const { mon, sat } = workWeekRange(dateStr);
+  const m0 = mon.getTime(), s1 = sat.getTime();
+  let items = 0, expected = 0;
+  (DB.dailyRecords || []).forEach(r => {
+    const t = ldate(r.date).getTime();
+    if(t >= m0 && t <= s1){
+      items += (r.deliveries || 0);
+      expected += (r.grossIncome || 0);
+    }
+  });
+  return { items, expected: Math.round(expected * 100) / 100 };
+}
+function buildPayWeeks(){
+  const weeks = {};
+  (DB.dailyRecords || []).forEach(r => {
+    const w = payFridayForDate(r.date);
+    weeks[w] = true;
+  });
+  // include weeks already saved (so past actuals stay editable)
+  (DB.payrollRecords || []).forEach(r => { weeks[r.date] = true; });
+  let list = Object.keys(weeks).sort((a,b) => b.localeCompare(a));
+  list = list.map(w => {
+    const sum = weekSum(w);
+    const saved = (DB.payrollRecords || []).find(p => p.date === w);
+    return {
+      date: w,
+      range: ymd(workWeekRange(w).mon) + ' – ' + ymd(workWeekRange(w).sat),
+      items: sum.items,
+      expected: sum.expected,
+      actual: saved ? saved.actual : null,
+      id: saved ? saved.id : null,
+    };
+  });
+  // weeks with no actual amount sink to the bottom (still newest-first among them)
+  list.sort((a,b) => {
+    const aDone = a.actual != null, bDone = b.actual != null;
+    if(aDone !== bDone) return aDone ? -1 : 1;
+    return b.date.localeCompare(a.date);
+  });
+  return list;
+}
+
+function renderPayPage(){
+  renderPayTable();
+}
+
+function renderPayTable(){
+  const body = document.getElementById('payTableBody');
+  if(!body) return;
+  const all = buildPayWeeks();
+  if(all.length === 0){
+    body.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">💷</div><div class="empty-state-text">' + t('empty_pay') + '</div></div></td></tr>';
+    renderPayMonthBar([]);
+    return;
+  }
+  // month list from pay-day months, newest first
+  const months = [];
+  const monthSet = {};
+  all.forEach(w => {
+    const mk = w.date.slice(0,7);
+    if(!monthSet[mk]){ monthSet[mk] = true; months.push(mk); }
+  });
+  months.sort((a,b) => b.localeCompare(a));
+  // total weeks for "all" option
+  const filtered = (payMonthFilter === 'all') ? all : all.filter(w => w.date.slice(0,7) === payMonthFilter);
+  const rowHtml = (w) => {
+    const diff = (w.actual != null && w.expected != null) ? (Math.round((w.expected - w.actual) * 100) / 100) : null;
+    let diffHtml = '<span class="muted">—</span>';
+    if(diff != null){
+      if(Math.abs(diff) < 0.005){
+        diffHtml = '<span class="tag-ok">' + t('pay_exact') + '</span>';
+      } else if(diff > 0){
+        diffHtml = '<span class="tag-bad">-' + fmt(diff) + '</span>';
+      } else {
+        diffHtml = '<span class="tag-warn">+' + fmt(-diff) + '</span>';
+      }
+    }
+    const actualVal = (w.actual != null) ? w.actual : '';
+    const idAttr = w.id ? w.id : ('new_' + w.date);
+    const L = (zh,en) => (currentLang === 'en' ? en : zh);
+    return `
+      <tr>
+        <td class="pay-fri" data-label="${L('出糧日 (五)','Pay Fri')}">${formatDateDisplay(w.date)}</td>
+        <td class="pay-range" data-label="${L('涵蓋星期','Week')}">${w.range}</td>
+        <td class="pay-num" data-label="${L('件數','Items')}">${w.items}</td>
+        <td class="pay-num" data-label="${L('應出糧','Expected')}">${fmt(w.expected)}</td>
+        <td class="pay-actual" data-label="${L('實際出糧','Actual')}">
+          <div class="input-prefix-wrap sm">
+            <span class="input-prefix">£</span>
+            <input type="number" class="input-field pay-input" id="payActual_${idAttr}" value="${actualVal}" placeholder="0.00" inputmode="decimal" min="0" step="0.01" data-paydate="${w.date}">
+          </div>
+        </td>
+        <td class="pay-num pay-diff" data-label="${L('差額','Diff')}">${diffHtml}</td>
+      </tr>`;
+  };
+  let html = filtered.map(rowHtml).join('');
+  if(filtered.length === 0){
+    html = '<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">👀</div><div class="empty-state-text">' + t('pay_month_empty') + '</div></div></td></tr>';
+  }
+  body.innerHTML = html;
+  renderPayMonthBar(months);
+  // live recompute on actual input
+  body.querySelectorAll('.pay-input').forEach(inp => {
+    inp.addEventListener('input', onPayActualInput);
+  });
+}
+
+function monthLabel(mk){
+  const [y, m] = mk.split('-').map(Number);
+  const L = (zh,en) => (currentLang === 'en' ? en : zh);
+  return L(y + '年' + m + '月', y + '/' + (m < 10 ? '0' + m : m));
+}
+
+function renderPayMonthBar(months){
+  const bar = document.getElementById('payMonthBar');
+  if(!bar) return;
+  if(!months || months.length === 0){
+    bar.style.display = 'none';
+    bar.innerHTML = '';
+    return;
+  }
+  bar.style.display = 'flex';
+  const L = (zh,en) => (currentLang === 'en' ? en : zh);
+  let html = '<button class="btn-mini' + (payMonthFilter === 'all' ? ' btn-mini-active' : '') + '" onclick="setPayMonthFilter(\'all\')">' + L('全部','All') + ' (' + months.length + ')</button>';
+  months.forEach(mk => {
+    html += '<button class="btn-mini' + (payMonthFilter === mk ? ' btn-mini-active' : '') + '" onclick="setPayMonthFilter(\'' + mk + '\')">' + monthLabel(mk) + '</button>';
+  });
+  bar.innerHTML = html;
+}
+
+function setPayMonthFilter(mk){
+  payMonthFilter = mk;
+  renderPayTable();
+}
+
+let payMonthFilter = 'all';
+
+function onPayActualInput(e){
+  const inp = e.currentTarget || e.target;
+  const dateStr = inp.getAttribute('data-paydate');
+  const val = parseFloat(inp.value);
+  const actual = (!isNaN(val) && val > 0) ? Math.round(val * 100) / 100 : null;
+  let rec = (DB.payrollRecords || []).find(p => p.date === dateStr);
+  if(actual == null){
+    if(rec) rec.actual = null;
+  } else {
+    if(!rec){
+      rec = { id: 'pay_' + Date.now() + '_' + Math.random().toString(36).slice(2,8), date: dateStr, createdAt: new Date().toISOString() };
+      DB.payrollRecords.push(rec);
+    }
+    rec.actual = actual;
+  }
+  DB.payrollRecords = DB.payrollRecords.filter(p => p.actual != null);
+  saveData();
+  // update just this row's diff without rebuilding (keeps focus)
+  const row = inp.closest('tr');
+  const diffCell = row ? row.querySelector('.pay-diff') : null;
+  if(diffCell){
+    const week = buildPayWeeks().find(x => x.date === dateStr);
+    if(week){
+      const diff = (week.actual != null && week.expected != null) ? (Math.round((week.expected - week.actual) * 100) / 100) : null;
+      if(diff == null){ diffCell.innerHTML = '<span class="muted">—</span>'; }
+      else if(Math.abs(diff) < 0.005){ diffCell.innerHTML = '<span class="tag-ok">' + t('pay_exact') + '</span>'; }
+      else if(diff > 0){ diffCell.innerHTML = '<span class="tag-bad">-' + fmt(diff) + '</span>'; }
+      else { diffCell.innerHTML = '<span class="tag-warn">+' + fmt(-diff) + '</span>'; }
+    }
+  }
 }
 
 /* ===== Tax Page ===== */
