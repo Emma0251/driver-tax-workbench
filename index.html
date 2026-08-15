@@ -1329,7 +1329,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
             <tbody id="payTableBody"></tbody>
           </table>
         </div>
-        <div class="field-hint" data-i18n="pay_auto_note">未填「實際出糧」嘅週會自動擺喺最底。改咗每日紀錄後，撳下面「重新整理」更新件數同應出糧。</div>
+        <div class="field-hint" data-i18n="pay_auto_note">所有週一律按出糧日（新到舊）排，唔會因輸入先後而移位。改咗每日紀錄後，撳下面「重新整理」更新件數同應出糧。</div>
         <button class="btn btn-secondary" onclick="renderPayPage()" data-i18n="pay_refresh">🔄 重新整理</button>
       </div>
     </div>
@@ -1843,7 +1843,7 @@ const I18N = {
   pay_col_expected: { zh:'應出糧<span class="en">Expected</span>', en:'Expected' },
   pay_col_actual: { zh:'實際出糧<span class="en">Actual</span>', en:'Actual' },
   pay_col_diff: { zh:'差額<span class="en">Diff</span>', en:'Diff' },
-  pay_auto_note: { zh:'未填「實際出糧」嘅週會自動擺喺最底。改咗每日紀錄後，撳下面「重新整理」更新件數同應出糧。', en:'Weeks without an actual amount go to the bottom. After editing daily records, tap "Refresh" to update items & expected pay.' },
+  pay_auto_note: { zh:'所有週一律按出糧日（新到舊）排，唔會因輸入先後而移位。改咗每日紀錄後，撳下面「重新整理」更新件數同應出糧。', en:'All weeks are ordered strictly by pay date (newest first) — filling in amounts never reorders them. After editing daily records, tap "Refresh" to update items & expected pay.' },
   pay_month_empty: { zh:'呢個月份暫時無出糧紀錄', en:'No pay records for this month' },
   pay_refresh: { zh:'🔄 重新整理', en:'🔄 Refresh' },
   pay_shortfall: { zh:'老細出少咗', en:'Underpaid' },
@@ -3186,6 +3186,7 @@ function buildPayWeeks(){
   });
   // include weeks already saved (so past actuals stay editable)
   (DB.payrollRecords || []).forEach(r => { weeks[r.date] = true; });
+  // pure date order (newest pay-date first) — NOT by input time
   let list = Object.keys(weeks).sort((a,b) => b.localeCompare(a));
   list = list.map(w => {
     const sum = weekSum(w);
@@ -3198,12 +3199,6 @@ function buildPayWeeks(){
       actual: saved ? saved.actual : null,
       id: saved ? saved.id : null,
     };
-  });
-  // weeks with no actual amount sink to the bottom (still newest-first among them)
-  list.sort((a,b) => {
-    const aDone = a.actual != null, bDone = b.actual != null;
-    if(aDone !== bDone) return aDone ? -1 : 1;
-    return b.date.localeCompare(a.date);
   });
   return list;
 }
