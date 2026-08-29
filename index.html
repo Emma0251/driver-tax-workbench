@@ -236,6 +236,14 @@ body{
 }
 .delete-btn:hover{background:var(--danger);color:#fff;}
 .delete-btn:active{transform:scale(.92);}
+.record-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.icon-btn{
+  width:34px;height:34px;border:1.5px solid var(--border-soft);border-radius:8px;
+  background:var(--card);color:var(--primary);font-size:16px;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.icon-btn:hover{background:var(--purple-bg)}
+.icon-btn:active{transform:scale(.92);}
 
 /* swipe-to-delete styles removed */
 
@@ -304,6 +312,18 @@ body{
   .pay-actual .input-prefix-wrap{width:150px}
   .pay-num{text-align:right}
   .pay-diff{font-size:15px}
+}
+
+/* 窄屏：紀錄項 + 表單掣排版 */
+@media (max-width:640px){
+  .record-item{flex-wrap:wrap}
+  .record-amount{font-size:14px}
+  .record-actions{flex-direction:row}
+  .card .btn-primary,
+  .card .btn-soft,
+  .card .btn-secondary{width:100%;margin-left:0 !important}
+  .input-prefix-wrap{width:100%}
+  .summary-grid{grid-template-columns:1fr 1fr}
 }
 
 .section-divider{
@@ -706,8 +726,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   body{background:#fff}
   .sidebar,.topbar,.nav,.page-header,.no-print,.view-toggle,#monthlyTaxYearBar{display:none !important}
   .page{display:none !important}
-  #page-monthly{display:block !important;padding:0;margin:0}
-  #page-monthly .card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+  .page.active{display:block !important;padding:0;margin:0}
+  .card{box-shadow:none;border:1px solid #ddd;break-inside:avoid;margin:8px 0}
   .table-scroll{overflow:visible}
   .monthly-table{width:100%;border-collapse:collapse}
   .monthly-table th,.monthly-table td{border:1px solid #999;padding:4px 6px;font-size:11px}
@@ -916,6 +936,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
           </div>
         </div>
         <button class="btn btn-primary" onclick="saveDailyRecord(event)" style="margin-top:12px" data-i18n="daily_save">💾 儲存紀錄</button>
+        <button class="btn btn-soft" type="button" onclick="cloneLastDaily()" style="margin-top:12px;margin-left:8px" data-i18n="daily_clone">📋 抄上次</button>
       </div>
 
       <!-- Recent Records -->
@@ -946,7 +967,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{
             </div>
           </div>
         </div>
-        <div class="swipe-hint"><span data-i18n="swipe_hint_text">點擊 ✕ 刪除記錄</span></div>
+        <div class="swipe-hint"><span data-i18n="swipe_hint_text">點擊 ✎ 編輯 / ✕ 刪除記錄</span></div>
+        <input type="search" class="input-field" id="dailySearch" placeholder="🔍 搜尋日期 / 件數…" oninput="dailySearchTerm=this.value;renderDailyRecords()" style="margin-bottom:8px">
         <div id="dailyRecords" class="record-scroll"></div>
       </div>
 
@@ -991,6 +1013,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
           <div class="input-hint" data-i18n="expense_receipt_hint">影張 receipt 存底（HMRC 查數用）。會自動縮圖，唔會撐爆儲存。</div>
         </div>
         <button class="btn btn-primary" onclick="saveExpenseRecord(event)" style="margin-top:12px" data-i18n="daily_add_expense">➕ 新增支出</button>
+        <button class="btn btn-soft" type="button" onclick="cloneLastExpense()" style="margin-top:12px;margin-left:8px" data-i18n="expense_clone">📋 抄上次</button>
       </div>
 
       <!-- Recent Expenses -->
@@ -1001,8 +1024,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{
           <button class="view-toggle-btn active" data-view="thisWeek" onclick="setRecordView('expense','thisWeek')" data-i18n="view_thisWeek">本週</button>
           <button class="view-toggle-btn" data-view="thisMonth" onclick="setRecordView('expense','thisMonth')" data-i18n="view_thisMonth">本月</button>
         </div>
-        <div class="swipe-hint"><span data-i18n="swipe_hint_text">點擊 ✕ 刪除記錄</span></div>
+        <div class="swipe-hint"><span data-i18n="swipe_hint_text">點擊 ✎ 編輯 / ✕ 刪除記錄</span></div>
+        <input type="search" class="input-field" id="expenseSearch" placeholder="🔍 搜尋日期 / 類別 / 備註…" oninput="expenseSearchTerm=this.value;renderExpenseRecords()" style="margin-bottom:8px">
         <div id="expenseRecords" class="record-scroll"></div>
+        <button class="btn btn-secondary no-print" onclick="window.print()" style="margin-top:12px" data-i18n="print_expense_btn">🖨️ 列印支出表</button>
       </div>
     </div>
 
@@ -1129,7 +1154,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
         <div class="input-group">
           <div class="input-label" data-i18n="tax_vehicle_method">扣稅方式 <span class="en">Method</span></div>
           <div class="method-fixed" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px">
-            <span style="font-weight:600;color:#1e3a8a">里數率 45p/25p · Mileage</span>
+            <span style="font-weight:600;color:#1e3a8a" data-i18n="tax_method_mileage_label">里數率 45p/25p · Mileage</span>
             <span style="font-size:12px;color:#475569" data-i18n="tax_method_fixed_note">已固定用里數法扣稅（最穩陣、最方便，已包所有行車成本）。</span>
           </div>
           <div class="input-hint" data-i18n="tax_vehicle_method_hint">按稅年鎖定。混能車通常用里數率最慳稅。</div>
@@ -1144,7 +1169,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
           <input type="number" class="input-field" id="vehicleEndOdometer" placeholder="0" inputmode="decimal" min="0" step="1" oninput="autoSaveVehicle()">
           <label class="checkbox-row" style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;cursor:pointer">
             <input type="checkbox" id="vehicleAnnualMilesConfirmed" onchange="autoSaveVehicle()">
-            <span>年尾已讀錶確認 <span class="en">Year-end confirmed</span></span>
+            <span data-i18n="tax_yearend_confirm">年尾已讀錶確認 <span class="en">Year-end confirmed</span></span>
           </label>
           <div class="computed-row" id="vehicleAnnualComputed" style="margin-top:8px;font-size:13px;color:#2563eb;font-weight:600"></div>
           <div class="notice warn" id="mileageOverrideNote" style="margin-top:8px;display:none"></div>
@@ -1158,6 +1183,21 @@ input[type="date"]::-webkit-calendar-picker-indicator{
           </div>
           <div class="input-hint" data-i18n="tax_business_ratio_hint">你 Mon–Sat 返工、Sunday 輕自用 → 約 90%。無每日里數時用作估算。</div>
         </div>
+      </div>
+
+      <!-- Method Comparison -->
+      <div class="card">
+        <div class="section-label" data-i18n="tax_method_compare">⚖️ 扣稅方法對比 <span class="en">Method Comparison</span></div>
+        <div class="stat-row">
+          <span class="stat-label" data-i18n="tax_method_mileage">里數法（車輛扣稅）<span class="en">Mileage</span></span>
+          <span class="stat-value" id="cmpMileage">£0.00</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label" data-i18n="tax_method_actual">實際支出法（車輛扣稅）<span class="en">Actual Costs</span></span>
+          <span class="stat-value" id="cmpActual">£0.00</span>
+        </div>
+        <div id="cmpRecommend" class="input-hint" style="margin-top:6px;font-weight:600"></div>
+        <div class="input-hint" data-i18n="tax_method_compare_note">實際支出法：油費＋保險＋維修＋MOT＋路稅等車輛開支，按工作比例折算。本 App 實際計稅仍用里數法，此對比只供參考。</div>
       </div>
 
       <!-- Tax Breakdown -->
@@ -1207,6 +1247,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
       <!-- Result Banner -->
       <div id="taxResultBanner"></div>
+      <button class="btn btn-secondary no-print" onclick="window.print()" style="margin-top:12px" data-i18n="print_tax_btn">🖨️ 列印稅務摘要</button>
     </div>
 
     <!-- ==================== Page: Annual ==================== -->
@@ -1379,7 +1420,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
         <div class="notice warn no-print" id="monthlyDisclaimer" style="margin-top:12px;display:none"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px" class="no-print">
           <button class="btn btn-primary" onclick="exportMonthlyCSV()" data-i18n="monthly_export_btn">📥 匯出 Excel / CSV</button>
-          <button class="btn btn-secondary" onclick="window.print()" data-i18n="monthly_print_btn">🖨️ 列印 / 另存 PDF</button>
+          <button class="btn btn-secondary no-print" onclick="window.print()" data-i18n="monthly_print_btn">🖨️ 列印 / 另存 PDF</button>
         </div>
 
         <div class="card" style="margin-top:18px">
@@ -1707,6 +1748,11 @@ const I18N = {
   alert_enter_category: { zh:'請輸入支出項目名稱', en:'Please enter an expense category.' },
   alert_enter_amount: { zh:'請輸入有效金額', en:'Please enter a valid amount.' },
   alert_delete_expense: { zh:'確定刪除此支出紀錄？', en:'Delete this expense record?' },
+  daily_update: { zh:'💾 更新紀錄', en:'💾 Update Record' },
+  expense_update: { zh:'➕ 更新支出', en:'➕ Update Expense' },
+  daily_clone: { zh:'📋 抄上次', en:'📋 Copy Last' },
+  expense_clone: { zh:'📋 抄上次', en:'📋 Copy Last' },
+  alert_no_record: { zh:'仲未有任何紀錄可以抄', en:'No previous record to copy yet.' },
 
   /* --- Fuel Page (static) --- */
   fuel_title: { zh:'⛽ 油價與行車', en:'⛽ Fuel & Driving' },
@@ -1768,6 +1814,14 @@ const I18N = {
   tax_vehicle_method: { zh:'扣稅方式 <span class="en">Method</span>', en:'Method' },
   tax_vehicle_method_hint: { zh:'按稅年鎖定。混能車通常用里數率最慳稅。', en:'Locked per tax year. Hybrid cars usually save most with mileage rate.' },
   tax_method_fixed_note: { zh:'已固定用里數法扣稅（最穩陣、最方便，已包所有行車成本）。', en:'Mileage is the fixed deduction method (safest & simplest — covers all vehicle running costs).' },
+  tax_method_mileage_label: { zh:'里數率 45p/25p · Mileage', en:'Mileage rate 45p/25p · Mileage' },
+  tax_yearend_confirm: { zh:'年尾已讀錶確認 <span class="en">Year-end confirmed</span>', en:'Year-end confirmed <span class="en">年尾已讀錶確認</span>' },
+  tax_method_compare: { zh:'⚖️ 扣稅方法對比 <span class="en">Method Comparison</span>', en:'⚖️ Method Comparison' },
+  tax_method_mileage: { zh:'里數法（車輛扣稅）<span class="en">Mileage</span>', en:'Mileage Method' },
+  tax_method_actual: { zh:'實際支出法（車輛扣稅）<span class="en">Actual Costs</span>', en:'Actual-Cost Method' },
+  tax_method_compare_note: { zh:'實際支出法：油費＋保險＋維修＋MOT＋路稅等車輛開支，按工作比例折算。本 App 實際計稅仍用里數法，此對比只供參考。', en:'Actual costs: fuel + insurance + repairs + MOT + road tax etc., apportioned by business ratio. The App still calculates tax using the mileage method; this comparison is for reference only.' },
+  tax_method_actual_better: { zh:'💡 今年用「實際支出法」可能慳返 {diff}', en:'💡 Actual costs could save you {diff} this year' },
+  tax_method_mileage_better: { zh:'💡 用「里數法」已經最著數（多慳 {diff}）', en:'💡 Mileage method is already best (saves {diff} more)' },
   tax_annual_miles: { zh:'全年總里數（自動計算） <span class="en">Total Annual Miles</span>', en:'Total Annual Miles (auto)' },
   tax_start_odo: { zh:'開始工作當日讀錶里數 <span class="en">Odometer at Start</span>', en:'Odometer at Start of Work' },
   tax_start_odo_hint: { zh:'開工第一日錶板上的里數，現在就填。', en:'The odometer reading on your first day of work — fill it in now.' },
@@ -1923,9 +1977,11 @@ const I18N = {
 
   /* --- Monthly / Reconcile --- */
   monthly_print_btn: { zh:'🖨️ 列印 / 另存 PDF', en:'🖨️ Print / Save PDF' },
+  print_expense_btn: { zh:'🖨️ 列印支出表', en:'🖨️ Print Expense Report' },
+  print_tax_btn: { zh:'🖨️ 列印稅務摘要', en:'🖨️ Print Tax Summary' },
   monthly_ty_all: { zh:'全部月份', en:'All Months' },
   reconcile_title: { zh:'🔍 完整性對帳 <span class="en">Reconciliation</span>', en:'🔍 Reconciliation' },
-  reconcile_hint: { zh:'按上方所選稅年，檢查每日記錄有冇缺口（漏記嘅日子）。紅色為連續無記錄嘅日期範圍，可幫你發現「漏咗幾多日」。', en:'For the selected tax year above, checks for gaps in daily records (missed days). Red ranges are consecutive days with no record — helps spot how many days you missed.' },
+  reconcile_hint: { zh:'按上方所選稅年，檢查每日記錄有冇缺口（漏記嘅日子）。星期日為例假，自動跳過不計入缺口。紅色為連續無記錄嘅日期範圍，可幫你發現「漏咗幾多日」。', en:'For the selected tax year above, checks for gaps in daily records (missed days). Sundays are skipped as your regular day off. Red ranges are consecutive days with no record — helps spot how many days you missed.' },
   reconcile_allgood: { zh:'✅ 呢個稅年嘅每日記錄無缺口。', en:'✅ No gaps found in daily records for this tax year.' },
   reconcile_summary: { zh:'此稅年由 ', en:'This tax year spans ' },
   reconcile_to: { zh:' 至 ', en:' to ' },
@@ -2412,6 +2468,19 @@ function isVehicleExpenseCategory(cat){
   const c = (cat || '').toLowerCase();
   return VEHICLE_EXPENSE_KEYWORDS.some(k => c.includes(k.toLowerCase()));
 }
+// Actual-cost method vehicle deduction: actual vehicle running costs (fuel, insurance,
+// repairs, MOT, road tax, etc.) apportioned by business ratio. Used only for the
+// method-comparison card — the App's actual tax calc stays on the mileage method.
+function getActualCostDeduction(taxYear){
+  const ratio = DB.settings.businessRatio ?? 0.90;
+  const fuel = getActualFuelTotalForTaxYear(taxYear);
+  const byCat = getExpensesByCategoryForTaxYear(taxYear);
+  let total = fuel * ratio;
+  Object.entries(byCat).forEach(([cat, amt]) => {
+    if(isVehicleExpenseCategory(cat)) total += (amt || 0) * ratio;
+  });
+  return total;
+}
 function getBusinessMilesForTaxYear(taxYear){
   const vcfg = getVehicleConfig(taxYear);
   const ratio = DB.settings.businessRatio ?? 0.90;
@@ -2539,13 +2608,17 @@ function getFullTaxCalc(taxYear){
 
 /* ===== Navigation ===== */
 function navigateTo(page){
+  const target = document.getElementById('page-' + page);
+  if(!target){ console.warn('navigateTo: unknown page "' + page + '"'); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
+  target.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+  const navEl = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if(navEl) navEl.classList.add('active');
 
   if(window.innerWidth < 500){
-    document.getElementById('sidebar').classList.remove('expanded');
+    const sb = document.getElementById('sidebar');
+    if(sb) sb.classList.remove('expanded');
   }
 
   if(page === 'home') renderHomePage();
@@ -2836,6 +2909,10 @@ document.getElementById('dailyDirectIncome').addEventListener('input', updateDai
 document.getElementById('dailyDate').addEventListener('change', updateDailyPreview);
 
 let incomeModeCurrent = 'parcel';
+let editingDailyDate = null;
+let editingExpenseId = null;
+let dailySearchTerm = '';
+let expenseSearchTerm = '';
 function setIncomeMode(mode){
   incomeModeCurrent = mode;
   document.querySelectorAll('#incomeModeToggle .seg-btn').forEach(b => {
@@ -2876,7 +2953,7 @@ function saveDailyRecord(e){
   }
 
   const dupIdx = DB.dailyRecords.findIndex(r => r.date === dateStr);
-  if(dupIdx >= 0 && !confirm(t('alert_dup_daily'))) return;
+  if(dupIdx >= 0 && dateStr !== editingDailyDate && !confirm(t('alert_dup_daily'))) return;
 
   const rate = DB.settings.ratePerDelivery;
   const gross = mode === 'direct' ? directIncome : deliveries * rate;
@@ -2917,6 +2994,9 @@ function saveDailyRecord(e){
   document.getElementById('dailyPreview').style.display = 'none';
   resetIncomeModeToDefault();
 
+  editingDailyDate = null;
+  const dbtn = document.querySelector('#page-daily .btn-primary[onclick^="saveDailyRecord"]');
+  if(dbtn) dbtn.textContent = t('daily_save');
   if(e && e.currentTarget) flashSaved(e.currentTarget, null, 'saved_label');
   renderDailyPage();
 }
@@ -2928,11 +3008,47 @@ function deleteDailyRecord(date){
   renderDailyPage();
 }
 
+function editDailyRecord(date){
+  const r = DB.dailyRecords.find(x => x.date === date);
+  if(!r) return;
+  editingDailyDate = date;
+  document.getElementById('dailyDate').value = r.date;
+  setIncomeMode(r.incomeMode || 'parcel');
+  if(r.incomeMode === 'direct'){
+    document.getElementById('dailyDirectIncome').value = r.directIncome || 0;
+    document.getElementById('dailyDeliveries').value = '';
+  } else {
+    document.getElementById('dailyDeliveries').value = r.deliveries || 0;
+    document.getElementById('dailyDirectIncome').value = '';
+  }
+  document.getElementById('dailyBusinessMiles').value = r.businessMiles || '';
+  const btn = document.querySelector('#page-daily .btn-primary[onclick^="saveDailyRecord"]');
+  if(btn) btn.textContent = t('daily_update');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cloneLastDaily(){
+  const last = [...DB.dailyRecords].reverse()[0];
+  if(!last){ alert(t('alert_no_record')); return; }
+  setIncomeMode(last.incomeMode || 'parcel');
+  if(last.incomeMode === 'direct'){
+    document.getElementById('dailyDirectIncome').value = last.directIncome || 0;
+  } else {
+    document.getElementById('dailyDeliveries').value = last.deliveries || 0;
+  }
+  document.getElementById('dailyBusinessMiles').value = last.businessMiles || '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function renderDailyRecords(){
   renderPeriodSummary();
   const container = document.getElementById('dailyRecords');
   const all = [...DB.dailyRecords].reverse();
-  const records = filterByView(all, recordViewMode.daily, 'date');
+  let records = filterByView(all, recordViewMode.daily, 'date');
+  if(dailySearchTerm){
+    const q = dailySearchTerm.toLowerCase();
+    records = records.filter(r => (r.date || '').toLowerCase().includes(q) || String(r.deliveries).includes(q) || (r.incomeMode === 'direct' ? t('record_direct').toLowerCase() : '').includes(q));
+  }
 
   if(records.length === 0){
     const msg = DB.dailyRecords.length === 0 ? t('empty_daily') : t('empty_period');
@@ -2953,7 +3069,10 @@ function renderDailyRecords(){
         <div class="record-amount net">${fmt(r.netIncome)}</div>
         <div class="record-amount muted">${rInc} ${fmt(r.grossIncome)}</div>
       </div>
-      <button class="delete-btn" onclick="deleteDailyRecord('${r.date}')" title="刪除記錄">✕</button>
+      <div class="record-actions">
+        <button class="icon-btn" onclick="editDailyRecord('${r.date}')" title="編輯">✎</button>
+        <button class="delete-btn" onclick="deleteDailyRecord('${r.date}')" title="刪除記錄">✕</button>
+      </div>
     </div>
   `).join('');
 }
@@ -2978,6 +3097,33 @@ function saveExpenseRecord(e){
   if(amount < 0){ alert((currentLang === 'en') ? 'Amount cannot be negative.' : '金額唔可以係負數。'); return; }
   if(!category){ alert(t('alert_enter_category')); return; }
   if(amount <= 0){ alert(t('alert_enter_amount')); return; }
+
+  if(editingExpenseId){
+    const idx = DB.expenseRecords.findIndex(r => r.id === editingExpenseId);
+    if(idx >= 0){
+      const ex = DB.expenseRecords[idx];
+      const newReceipt = (pendingReceiptData !== null) ? pendingReceiptData : ex.receipt;
+      const newReceiptName = (pendingReceiptData !== null) ? pendingReceiptName : ex.receiptName;
+      DB.expenseRecords[idx] = Object.assign({}, ex, {
+        date: dateStr,
+        taxYear: getTaxYear(dateStr),
+        category, description, amount,
+        receipt: newReceipt, receiptName: newReceiptName,
+        createdAt: ex.createdAt,
+      });
+    }
+    editingExpenseId = null;
+    const ebtn = document.querySelector('#page-daily .btn-primary[onclick^="saveExpenseRecord"]');
+    if(ebtn) ebtn.textContent = t('daily_add_expense');
+    saveData();
+    document.getElementById('expenseCategory').value = '';
+    document.getElementById('expenseDesc').value = '';
+    document.getElementById('expenseAmount').value = '';
+    clearPendingReceipt();
+    if(e && e.currentTarget) flashSaved(e.currentTarget, null, 'saved_label');
+    renderExpenseRecords();
+    return;
+  }
 
   const record = {
     id: 'exp_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
@@ -3011,6 +3157,28 @@ function deleteExpenseRecord(id){
   renderExpenseRecords();
 }
 
+function editExpenseRecord(id){
+  const r = DB.expenseRecords.find(x => x.id === id);
+  if(!r) return;
+  editingExpenseId = id;
+  document.getElementById('expenseDate').value = r.date;
+  document.getElementById('expenseCategory').value = r.category || '';
+  document.getElementById('expenseDesc').value = r.description || '';
+  document.getElementById('expenseAmount').value = r.amount || 0;
+  const btn = document.querySelector('#page-daily .btn-primary[onclick^="saveExpenseRecord"]');
+  if(btn) btn.textContent = t('expense_update');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cloneLastExpense(){
+  const last = [...DB.expenseRecords].reverse()[0];
+  if(!last){ alert(t('alert_no_record')); return; }
+  document.getElementById('expenseCategory').value = last.category || '';
+  document.getElementById('expenseDesc').value = last.description || '';
+  document.getElementById('expenseAmount').value = last.amount || 0;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function renderExpenseRecords(){
   const container = document.getElementById('expenseRecords');
   if(!container) return;
@@ -3021,7 +3189,11 @@ function renderExpenseRecords(){
   }
 
   const all = [...DB.expenseRecords].reverse();
-  const records = filterByView(all, recordViewMode.expense, 'date');
+  let records = filterByView(all, recordViewMode.expense, 'date');
+  if(expenseSearchTerm){
+    const q = expenseSearchTerm.toLowerCase();
+    records = records.filter(r => (r.date || '').toLowerCase().includes(q) || (r.category || '').toLowerCase().includes(q) || (r.description || '').toLowerCase().includes(q));
+  }
 
   if(records.length === 0){
     container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🧾</div><div class="empty-state-text">' + t('empty_period') + '</div></div>';
@@ -3036,7 +3208,10 @@ function renderExpenseRecords(){
         ${r.receipt ? `<img src="${r.receipt}" alt="receipt" style="width:42px;height:42px;object-fit:cover;border-radius:6px;margin-top:4px;border:1px solid #ddd">` : ''}
       </div>
       <div class="record-amount tax">${fmt(r.amount)}</div>
-      <button class="delete-btn" onclick="deleteExpenseRecord('${r.id}')" title="刪除記錄">✕</button>
+      <div class="record-actions">
+        <button class="icon-btn" onclick="editExpenseRecord('${r.id}')" title="編輯">✎</button>
+        <button class="delete-btn" onclick="deleteExpenseRecord('${r.id}')" title="刪除記錄">✕</button>
+      </div>
     </div>
   `).join('');
 }
@@ -3377,6 +3552,23 @@ function renderTaxPage(){
   document.getElementById('taxTotalDue').textContent = fmt(calc.totalTaxDue);
   document.getElementById('taxPaid').textContent = fmt(calc.totalTaxPaid);
   document.getElementById('taxAfterTax').textContent = fmt(calc.profitAfterTax);
+
+  const mileageDed = calcMileageDeduction(calc.se.businessMiles);
+  const actualDed = getActualCostDeduction(currentTaxYear);
+  const cmpM = document.getElementById('cmpMileage');
+  const cmpA = document.getElementById('cmpActual');
+  const cmpR = document.getElementById('cmpRecommend');
+  if(cmpM) cmpM.textContent = fmt(mileageDed);
+  if(cmpA) cmpA.textContent = fmt(actualDed);
+  if(cmpR){
+    if(actualDed > mileageDed + 0.005){
+      cmpR.textContent = t('tax_method_actual_better').replace('{diff}', fmt(actualDed - mileageDed));
+      cmpR.style.color = 'var(--income)';
+    } else {
+      cmpR.textContent = t('tax_method_mileage_better').replace('{diff}', fmt(mileageDed - actualDed));
+      cmpR.style.color = 'var(--tax)';
+    }
+  }
 
   updateMileageOverrideNote();
   renderTaxResultBanner(calc);
@@ -4039,6 +4231,7 @@ function renderReconcile(){
   const gaps = [];
   let curGap = null;
   for(let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)){
+    if(d.getDay() === 0) continue; // 星期日為例假，對數缺口不計入
     const ds = ymd(d);
     total++;
     if(present.has(ds)){ if(curGap){ gaps.push(curGap); curGap = null; } }
